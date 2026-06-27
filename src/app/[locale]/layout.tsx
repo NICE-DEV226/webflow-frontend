@@ -8,6 +8,7 @@ import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { getTenantFromHost } from "@/lib/tenant";
 import { TenantProvider } from "@/components/tenant-provider";
+import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
@@ -60,7 +61,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   // Résolution multi-tenant depuis le sous-domaine (allianz.claimflow.com → "allianz").
-  const tenant = getTenantFromHost((await headers()).get("host"));
+  const tenant = await getTenantFromHost((await headers()).get("host"));
 
   return (
     <html
@@ -73,8 +74,10 @@ export default async function LocaleLayout({
         <ThemeProvider>
           <NextIntlClientProvider>
             <TenantProvider tenant={tenant}>
-              {children}
-              <Toaster position="bottom-right" />
+              <AuthProvider>
+                {children}
+                <Toaster position="bottom-right" />
+              </AuthProvider>
             </TenantProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

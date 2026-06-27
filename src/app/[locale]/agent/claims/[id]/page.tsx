@@ -5,9 +5,8 @@ import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { AgentEvaluationForm } from "@/components/agent/agent-evaluation-form";
 import { CLAIM_TYPE } from "@/lib/claim-type";
-import { AGENT_QUEUE, getClaimDetail } from "@/lib/mock-claims";
-
-const AGENT = { name: "Thomas Koné", email: "thomas@example.com" };
+import { getClaimDetail, getAgentQueue } from "@/lib/api/claims";
+import { getMe } from "@/lib/api/auth";
 
 export default async function AgentClaimPage({
   params,
@@ -21,8 +20,10 @@ export default async function AgentClaimPage({
   const tAgent = await getTranslations("agent");
   const tType = await getTranslations("claimForm.fields.claim_type.options");
 
-  const claim = getClaimDetail(id);
-  const claimant = AGENT_QUEUE.find((c) => c.id === id)?.claimant ?? "—";
+  const user = await getMe();
+  const claim = await getClaimDetail(id);
+  const queue = await getAgentQueue();
+  const claimant = queue.find((c) => c.id === id)?.claimant ?? claim.clientName ?? "—";
   const type = CLAIM_TYPE[claim.type];
   const TypeIcon = type.icon;
 
@@ -39,7 +40,7 @@ export default async function AgentClaimPage({
   }).format(new Date(claim.date));
 
   return (
-    <AppShell role="agent" user={AGENT} title={claim.id} unread={AGENT_QUEUE.length}>
+    <AppShell role="agent" user={{ name: user.firstName + " " + user.lastName, email: user.email }} title={claim.id} unread={queue.length}>
       <Link
         href="/agent/queue"
         className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"

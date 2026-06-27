@@ -2,9 +2,11 @@
 
 import { createContext, useContext } from "react";
 
-import { DEFAULT_TENANT, type Tenant } from "@/lib/tenant";
+import { type Tenant } from "@/lib/tenant";
 
-const TenantContext = createContext<Tenant>(DEFAULT_TENANT);
+const FALLBACK: Tenant = { slug: "demo", name: "Demo Insurance", color: "#1E3A5F" };
+
+const TenantContext = createContext<Tenant>(FALLBACK);
 
 export function TenantProvider({
   tenant,

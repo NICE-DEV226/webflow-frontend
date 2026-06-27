@@ -1,27 +1,35 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
-import { ADMIN_AGENTS } from "@/lib/mock-claims";
+import { getAgents, type Agent } from "@/lib/api/agents";
+import { useAuth } from "@/components/auth-provider";
 import { cn } from "@/lib/utils";
 
-const ADMIN = { name: "David Laurent", email: "david@assureur-demo.com" };
+export default function AdminAgentsPage() {
+  const t = useTranslations("adminPages.agents");
+  const { user } = useAuth();
 
-export default async function AdminAgentsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+  const [agents, setAgents] = useState<Agent[]>([]);
 
-  const t = await getTranslations("adminPages.agents");
+  useEffect(() => {
+    if (user?.tenantSlug) {
+      getAgents(user.tenantSlug).then(setAgents);
+    }
+  }, [user?.tenantSlug]);
+
+  const sidebarUser = user
+    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    : { name: "", email: "" };
 
   return (
     <AppShell
       role="admin"
-      user={ADMIN}
+      user={sidebarUser}
       title={t("title")}
       unread={3}
       actions={
@@ -46,7 +54,7 @@ export default async function AdminAgentsPage({
               </tr>
             </thead>
             <tbody>
-              {ADMIN_AGENTS.map((a) => {
+              {agents.map((a) => {
                 const initials = a.name
                   .split(" ")
                   .map((p) => p[0])

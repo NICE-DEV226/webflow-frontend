@@ -13,9 +13,11 @@ import { buttonVariants } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
 import { StatusBadge } from "@/components/claim/status-badge";
 import { CLAIM_TYPE } from "@/lib/claim-type";
-import { MOCK_CLAIMS, claimantKpis } from "@/lib/mock-claims";
+import { getMyClaims } from "@/lib/api/claims";
+import { getMe } from "@/lib/api/auth";
+import type { ClaimStatus } from "@/lib/claim-status";
 
-const USER = { name: "Marie Dupont", email: "marie@example.com" };
+const IN_PROGRESS: ClaimStatus[] = ["submitted", "under_review", "evaluation", "approved"];
 
 export default async function ClaimantClaimsPage({
   params,
@@ -30,7 +32,17 @@ export default async function ClaimantClaimsPage({
   const tType = await getTranslations("claimForm.fields.claim_type.options");
   const tActions = await getTranslations("actions");
 
-  const kpis = claimantKpis(MOCK_CLAIMS);
+  const claims = await getMyClaims();
+  const user = await getMe();
+
+  const kpis = {
+    total: claims.length,
+    inProgress: claims.filter((c) => IN_PROGRESS.includes(c.status)).length,
+    reimbursed: claims.filter((c) => c.status === "paid").length,
+    received: claims
+      .filter((c) => c.status === "paid")
+      .reduce((sum, c) => sum + c.amount, 0),
+  };
   const money = (n: number) =>
     new Intl.NumberFormat(locale, {
       style: "currency",
@@ -54,7 +66,7 @@ export default async function ClaimantClaimsPage({
   return (
     <AppShell
       role="claimant"
-      user={USER}
+      user={{ name: `${user.firstName} ${user.lastName}`, email: user.email }}
       title={tNav("claims")}
       unread={2}
       actions={
@@ -98,7 +110,7 @@ export default async function ClaimantClaimsPage({
               </tr>
             </thead>
             <tbody>
-              {MOCK_CLAIMS.map((c, i) => {
+              {claims.map((c, i) => {
                 const type = CLAIM_TYPE[c.type];
                 const TypeIcon = type.icon;
                 return (

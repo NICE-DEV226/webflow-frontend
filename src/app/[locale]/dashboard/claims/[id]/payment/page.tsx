@@ -5,10 +5,9 @@ import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
 import { Lottie } from "@/components/lottie/lottie";
-import { getClaimDetail } from "@/lib/mock-claims";
+import { getClaimDetail } from "@/lib/api/claims";
+import { getMe } from "@/lib/api/auth";
 import { cn } from "@/lib/utils";
-
-const USER = { name: "Marie Dupont", email: "marie@example.com" };
 
 export default async function PaymentPage({
   params,
@@ -19,7 +18,8 @@ export default async function PaymentPage({
   setRequestLocale(locale);
 
   const t = await getTranslations("payment");
-  const claim = getClaimDetail(id);
+  const user = await getMe();
+  const claim = await getClaimDetail(id);
   const money = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: claim.currency,
@@ -34,7 +34,7 @@ export default async function PaymentPage({
   ];
 
   return (
-    <AppShell role="claimant" user={USER} title={t("title")}>
+    <AppShell role="claimant" user={{ name: `${user.firstName} ${user.lastName}`, email: user.email }} title={t("title")}>
       <div className="mx-auto max-w-md">
         <div className="rounded-2xl border bg-card p-8 text-center shadow-sm">
           <Lottie

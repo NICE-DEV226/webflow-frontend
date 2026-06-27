@@ -2,12 +2,16 @@
 
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
+import { login } from "@/lib/api/auth";
+import { useAuth } from "@/components/auth-provider";
+import { ApiError } from "@/lib/api/client";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -16,19 +20,36 @@ interface LoginValues {
   password: string;
 }
 
+const ROLE_ROUTES: Record<string, string> = {
+  admin: "/admin/dashboard",
+  agent: "/agent/queue",
+  claimant: "/dashboard/claims",
+};
+
 export function LoginForm() {
   const t = useTranslations("auth");
   const router = useRouter();
+  const { refresh } = useAuth();
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>();
 
-  const onSubmit = async () => {
-    // Démo : pas de backend — simulation puis redirection vers le portail.
-    await new Promise((r) => setTimeout(r, 600));
-    router.push("/dashboard/claims");
+  const onSubmit = async (data: LoginValues) => {
+    try {
+      const res = await login(data);
+      await refresh();
+      const route = ROLE_ROUTES[res.user.role] ?? "/dashboard/claims";
+      router.push(route);
+    } catch (e) {
+      if (e instanceof ApiError) {
+        toast.error(e.message);
+      } else {
+        toast.error(t("errors.generic"));
+      }
+    }
   };
 
   return (

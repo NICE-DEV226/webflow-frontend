@@ -4,9 +4,8 @@ import { ArrowLeft, FileText, Image as ImageIcon, Plus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { ClaimLiveTracker } from "@/components/claim/claim-live-tracker";
-import { getClaimDetail } from "@/lib/mock-claims";
-
-const USER = { name: "Marie Dupont", email: "marie@example.com" };
+import { getClaimDetail } from "@/lib/api/claims";
+import { getMe } from "@/lib/api/auth";
 
 export default async function ClaimDetailPage({
   params,
@@ -18,7 +17,8 @@ export default async function ClaimDetailPage({
 
   const t = await getTranslations("claimDetail");
   const tNav = await getTranslations("nav.claimant");
-  const claim = getClaimDetail(id);
+  const user = await getMe();
+  const claim = await getClaimDetail(id);
 
   const fmtDate = new Intl.DateTimeFormat(locale, {
     day: "2-digit",
@@ -27,7 +27,7 @@ export default async function ClaimDetailPage({
   }).format(new Date(claim.date));
 
   return (
-    <AppShell role="claimant" user={USER} title={claim.id} unread={2}>
+    <AppShell role="claimant" user={{ name: `${user.firstName} ${user.lastName}`, email: user.email }} title={claim.id} unread={2}>
       <Link
         href="/dashboard/claims"
         className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"

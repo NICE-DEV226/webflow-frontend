@@ -6,17 +6,16 @@ import { useRouter } from "@/i18n/navigation";
 import { CheckCircle, ArrowRight, PartyPopper } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { completeOnboarding, type ExtendedTenant } from "@/lib/mock-tenants";
+import { completeOnboarding, type ExtendedTenant } from "@/lib/api/tenants";
 
-export function SuccessStep() {
+export function SuccessStep({ sessionId }: { sessionId: string }) {
   const t = useTranslations("onboarding");
   const router = useRouter();
   const [tenant, setTenant] = useState<ExtendedTenant | null>(null);
 
   useEffect(() => {
-    const result = completeOnboarding();
-    setTenant(result);
-  }, []);
+    completeOnboarding(sessionId).then(setTenant).catch(() => {});
+  }, [sessionId]);
 
   function goToDashboard() {
     router.push("/admin/dashboard");

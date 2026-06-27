@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Copy, Link2, Plus, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
@@ -15,25 +15,31 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { useTenant } from "@/components/tenant-provider";
+import { useAuth } from "@/components/auth-provider";
 import {
   getPublicLinks,
   createPublicLink,
   togglePublicLink,
   deletePublicLink,
   type PublicFormLink,
-} from "@/lib/mock-public-links";
+} from "@/lib/api/public-links";
 import { cn } from "@/lib/utils";
 
 export function PublicLinksTab() {
   const t = useTranslations("adminPages.settings");
-  const tenant = useTenant();
-  const [links, setLinks] = useState<PublicFormLink[]>(() => getPublicLinks(tenant.slug));
+  const { user } = useAuth();
+  const tenantSlug = user?.tenantSlug ?? "";
+  const [links, setLinks] = useState<PublicFormLink[]>([]);
   const [showNew, setShowNew] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newSlug, setNewSlug] = useState("");
 
-  function handleCreate() {
+  useEffect(() => {
+    if (!tenantSlug) return;
+    getPublicLinks(tenantSlug).then(setLinks).catch(() => {});
+  }, [tenantSlug]);
+
+  async function handleCreate() {
     if (!newTitle.trim() || !newSlug.trim()) {
       toast.error(t("publicLinks.errors.required"));
       return;
@@ -43,29 +49,38 @@ export function PublicLinksTab() {
       toast.error(t("publicLinks.errors.duplicate"));
       return;
     }
-    const link = createPublicLink({
-      slug: newSlug.trim(),
-      tenantSlug: tenant.slug,
-      title: newTitle.trim(),
-    });
-    setLinks((prev) => [...prev, link]);
-    setNewTitle("");
-    setNewSlug("");
-    setShowNew(false);
-    toast.success(t("publicLinks.created"));
-  }
-
-  function handleToggle(id: string) {
-    const updated = togglePublicLink(id);
-    if (updated) {
-      setLinks((prev) => prev.map((l) => (l.id === id ? updated : l)));
+    try {
+      const link = await createPublicLink(tenantSlug, {
+        slug: newSlug.trim(),
+        title: newTitle.trim(),
+      });
+      setLinks((prev) => [...prev, link]);
+      setNewTitle("");
+      setNewSlug("");
+      setShowNew(false);
+      toast.success(t("publicLinks.created"));
+    } catch {
+      toast.error(t("publicLinks.errors.create"));
     }
   }
 
-  function handleDelete(id: string) {
-    deletePublicLink(id);
-    setLinks((prev) => prev.filter((l) => l.id !== id));
-    toast.success(t("publicLinks.deleted"));
+  async function handleToggle(id: string) {
+    try {
+      const updated = await togglePublicLink(id);
+      setLinks((prev) => prev.map((l) => (l.id === id ? updated : l)));
+    } catch {
+      toast.error(t("publicLinks.errors.toggle"));
+    }
+  }
+
+  async function handleDelete(id: string) {
+    try {
+      await deletePublicLink(id);
+      setLinks((prev) => prev.filter((l) => l.id !== id));
+      toast.success(t("publicLinks.deleted"));
+    } catch {
+      toast.error(t("publicLinks.errors.delete"));
+    }
   }
 
   function copyUrl(slug: string) {

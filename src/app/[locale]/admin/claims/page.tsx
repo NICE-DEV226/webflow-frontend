@@ -1,24 +1,31 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { StatusBadge } from "@/components/claim/status-badge";
 import { CLAIM_TYPE } from "@/lib/claim-type";
-import { ADMIN_RECENT } from "@/lib/mock-claims";
+import { getAdminRecentClaims, type RecentClaim } from "@/lib/api/claims";
+import { useAuth } from "@/components/auth-provider";
 
-const ADMIN = { name: "David Laurent", email: "david@assureur-demo.com" };
+export default function AdminClaimsPage() {
+  const t = useTranslations("adminPages.claims");
+  const tTable = useTranslations("dashboard.claimant.table");
+  const tType = useTranslations("claimForm.fields.claim_type.options");
+  const tRecent = useTranslations("admin.recent");
+  const locale = useLocale();
+  const { user } = useAuth();
 
-export default async function AdminClaimsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+  const [claims, setClaims] = useState<RecentClaim[]>([]);
 
-  const t = await getTranslations("adminPages.claims");
-  const tTable = await getTranslations("dashboard.claimant.table");
-  const tType = await getTranslations("claimForm.fields.claim_type.options");
-  const tRecent = await getTranslations("admin.recent");
+  useEffect(() => {
+    getAdminRecentClaims().then(setClaims);
+  }, []);
+
+  const sidebarUser = user
+    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    : { name: "", email: "" };
 
   const money = (n: number) =>
     new Intl.NumberFormat(locale, {
@@ -28,7 +35,7 @@ export default async function AdminClaimsPage({
     }).format(n);
 
   return (
-    <AppShell role="admin" user={ADMIN} title={t("title")} unread={3}>
+    <AppShell role="admin" user={sidebarUser} title={t("title")} unread={3}>
       <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -43,7 +50,7 @@ export default async function AdminClaimsPage({
               </tr>
             </thead>
             <tbody>
-              {ADMIN_RECENT.map((c, i) => {
+              {claims.map((c, i) => {
                 const type = CLAIM_TYPE[c.type];
                 const TypeIcon = type.icon;
                 return (

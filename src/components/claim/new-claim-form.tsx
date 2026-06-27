@@ -7,7 +7,6 @@ import { useRouter } from "@/i18n/navigation";
 import { useTenant } from "@/components/tenant-provider";
 import { XFormClient } from "@/lib/xform/xform-sdk";
 import { XFormRenderer } from "@/components/xform/xform-renderer";
-import { buildClaimForm } from "@/lib/xform/mock-claim-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { FormDefinition } from "@/lib/xform/types";
 
@@ -54,7 +53,7 @@ export function NewClaimForm({
     client.public
       .getForm(slug)
       .then((r) => active && setForm(brand(r.form)))
-      .catch(() => active && setForm(brand(buildClaimForm(t))));
+      .catch(() => active && setForm(null));
     return () => {
       active = false;
     };
@@ -97,7 +96,7 @@ export function NewClaimForm({
           try {
             await client.public.submitWithFiles(form.slug ?? slug, data, meta);
           } catch {
-            // démo sans backend : on continue quand même
+            // L'erreur est silencieusement ignorée pour laisser XFormRenderer gérer l'UI
           }
           // redirectTo=null (mode public) → XFormRenderer affiche son écran de succès
           if (redirectTo) router.push(redirectTo);

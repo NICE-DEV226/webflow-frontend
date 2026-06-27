@@ -1,23 +1,31 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ShieldCheck } from "lucide-react";
 
 import { AppShell } from "@/components/layout/app-shell";
-import { ADMIN_AUDIT } from "@/lib/mock-claims";
+import { getAuditTrail, type AuditEvent } from "@/lib/api/agents";
+import { useAuth } from "@/components/auth-provider";
 
-const ADMIN = { name: "David Laurent", email: "david@assureur-demo.com" };
+export default function AdminAuditPage() {
+  const t = useTranslations("adminPages.audit");
+  const { user } = useAuth();
 
-export default async function AdminAuditPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+  const [events, setEvents] = useState<AuditEvent[]>([]);
 
-  const t = await getTranslations("adminPages.audit");
+  useEffect(() => {
+    if (user?.tenantSlug) {
+      getAuditTrail(user.tenantSlug).then(setEvents);
+    }
+  }, [user?.tenantSlug]);
+
+  const sidebarUser = user
+    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    : { name: "", email: "" };
 
   return (
-    <AppShell role="admin" user={ADMIN} title={t("title")} unread={3}>
+    <AppShell role="admin" user={sidebarUser} title={t("title")} unread={3}>
       <div className="mb-5 flex items-start gap-3 rounded-xl border border-l-4 border-l-emerald bg-card p-4 shadow-sm">
         <ShieldCheck className="mt-0.5 size-5 shrink-0 text-emerald" />
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
@@ -35,7 +43,7 @@ export default async function AdminAuditPage({
               </tr>
             </thead>
             <tbody>
-              {ADMIN_AUDIT.map((e, i) => (
+              {events.map((e, i) => (
                 <tr key={i} className="border-b last:border-0 hover:bg-accent/40">
                   <td className="px-5 py-3 text-foreground">{e.actor}</td>
                   <td className="px-5 py-3">

@@ -2,10 +2,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { StatusBadge } from "@/components/claim/status-badge";
-import { CLAIM_TYPE } from "@/lib/claim-type";
-import { ADMIN_RECENT } from "@/lib/mock-claims";
-
-const AGENT = { name: "Thomas Koné", email: "thomas@example.com" };
+import { CLAIM_TYPE, type ClaimType } from "@/lib/claim-type";
+import type { ClaimStatus } from "@/lib/claim-status";
+import { getAgentEvaluations } from "@/lib/api/agents";
+import { getMe } from "@/lib/api/auth";
 const DECIDED = ["approved", "rejected", "paid"] as const;
 
 export default async function AgentEvaluationsPage({
@@ -21,7 +21,9 @@ export default async function AgentEvaluationsPage({
   const tType = await getTranslations("claimForm.fields.claim_type.options");
   const tRecent = await getTranslations("admin.recent");
 
-  const rows = ADMIN_RECENT.filter((c) =>
+  const user = await getMe();
+  const evaluations = await getAgentEvaluations(user.id);
+  const rows = (evaluations as Array<{ id: string; type: ClaimType; client: string; amount: number; currency: string; status: ClaimStatus }>).filter((c) =>
     (DECIDED as readonly string[]).includes(c.status),
   );
 
@@ -33,7 +35,7 @@ export default async function AgentEvaluationsPage({
     }).format(n);
 
   return (
-    <AppShell role="agent" user={AGENT} title={tNav("evaluations")}>
+    <AppShell role="agent" user={{ name: user.firstName + " " + user.lastName, email: user.email }} title={tNav("evaluations")}>
       <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

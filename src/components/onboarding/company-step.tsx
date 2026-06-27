@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { saveOnboardingCompany, saveOnboardingBranding, getOnboardingData } from "@/lib/mock-tenants";
+import { saveOnboardingCompany, saveOnboardingBranding } from "@/lib/api/tenants";
 
 const COUNTRIES = [
   { value: "CI", label: "Côte d'Ivoire" },
@@ -38,15 +38,14 @@ const SECTORS = [
   { value: "other", label: "Autre" },
 ];
 
-export function CompanyStep({ onNext }: { onNext: () => void }) {
+export function CompanyStep({ onNext }: { onNext: (sessionId: string) => void }) {
   const t = useTranslations("onboarding");
-  const existing = getOnboardingData()?.company;
 
-  const [name, setName] = useState(existing?.name ?? "");
-  const [email, setEmail] = useState(existing?.email ?? "");
-  const [country, setCountry] = useState(existing?.country ?? "");
-  const [sector, setSector] = useState(existing?.sector ?? "");
-  const [agentCount, setAgentCount] = useState(String(existing?.agentCount ?? ""));
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [country, setCountry] = useState("");
+  const [sector, setSector] = useState("");
+  const [agentCount, setAgentCount] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#1E3A5F");
   const [secondaryColor, setSecondaryColor] = useState("#1D9E75");
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -72,21 +71,25 @@ export function CompanyStep({ onNext }: { onNext: () => void }) {
     reader.readAsDataURL(file);
   }
 
-  function handleNext() {
+  async function handleNext() {
     if (!validate()) return;
-    saveOnboardingCompany({
-      name: name.trim(),
-      email: email.trim(),
-      country,
-      sector,
-      agentCount: Number(agentCount) || 1,
-    });
-    saveOnboardingBranding({
-      primaryColor,
-      secondaryColor,
-      logoUrl: logoPreview,
-    });
-    onNext();
+    try {
+      const { sessionId } = await saveOnboardingCompany({
+        slug: "",
+        name: name.trim(),
+        country,
+        sector,
+        agentCount: Number(agentCount) || 1,
+      });
+      await saveOnboardingBranding(sessionId, {
+        primaryColor,
+        secondaryColor,
+        logoUrl: logoPreview,
+      });
+      onNext(sessionId);
+    } catch {
+      // error will be handled by the caller/toast
+    }
   }
 
   return (

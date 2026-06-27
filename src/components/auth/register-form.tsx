@@ -2,11 +2,15 @@
 
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { register as registerUser } from "@/lib/api/auth";
+import { useAuth } from "@/components/auth-provider";
+import { ApiError } from "@/lib/api/client";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -21,15 +25,25 @@ interface RegisterValues {
 export function RegisterForm() {
   const t = useTranslations("auth");
   const router = useRouter();
+  const { refresh } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<RegisterValues>();
 
-  const onSubmit = async () => {
-    await new Promise((r) => setTimeout(r, 600));
-    router.push("/onboarding");
+  const onSubmit = async (data: RegisterValues) => {
+    try {
+      await registerUser(data);
+      await refresh();
+      router.push("/onboarding");
+    } catch (e) {
+      if (e instanceof ApiError) {
+        toast.error(e.message);
+      } else {
+        toast.error(t("errors.generic"));
+      }
+    }
   };
 
   const errorText = (msg?: string) =>

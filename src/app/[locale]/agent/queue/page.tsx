@@ -5,10 +5,9 @@ import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
 import { CLAIM_TYPE } from "@/lib/claim-type";
-import { AGENT_QUEUE } from "@/lib/mock-claims";
+import { getAgentQueue } from "@/lib/api/claims";
+import { getMe } from "@/lib/api/auth";
 import { cn } from "@/lib/utils";
-
-const AGENT = { name: "Thomas Koné", email: "thomas@example.com" };
 
 export default async function AgentQueuePage({
   params,
@@ -21,6 +20,9 @@ export default async function AgentQueuePage({
   const t = await getTranslations("agent");
   const tNav = await getTranslations("nav.agent");
   const tType = await getTranslations("claimForm.fields.claim_type.options");
+
+  const user = await getMe();
+  const queue = await getAgentQueue();
 
   const money = (n: number) =>
     new Intl.NumberFormat(locale, {
@@ -36,14 +38,14 @@ export default async function AgentQueuePage({
   ];
 
   const tabs = [
-    { label: t("tabs.all"), count: AGENT_QUEUE.length, active: true },
+    { label: t("tabs.all"), count: queue.length, active: true },
     { label: t("tabs.toReview"), count: 2, active: false },
     { label: t("tabs.inProgress"), count: 1, active: false },
     { label: t("tabs.done"), count: 47, active: false },
   ];
 
   return (
-    <AppShell role="agent" user={AGENT} title={tNav("queue")} unread={AGENT_QUEUE.length}>
+    <AppShell role="agent" user={{ name: user.firstName + " " + user.lastName, email: user.email }} title={tNav("queue")} unread={queue.length}>
       {/* KPIs */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {kpis.map((k) => {
@@ -87,7 +89,7 @@ export default async function AgentQueuePage({
 
       {/* Queue */}
       <div className="mt-4 space-y-3">
-        {AGENT_QUEUE.map((c) => {
+        {queue.map((c) => {
           const type = CLAIM_TYPE[c.type];
           const TypeIcon = type.icon;
           return (

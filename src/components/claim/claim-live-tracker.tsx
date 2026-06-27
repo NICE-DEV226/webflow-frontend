@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Play, RotateCcw, Wifi } from "lucide-react";
+import { RotateCcw, Wifi } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -51,10 +51,7 @@ export function ClaimLiveTracker({
   const [events, setEvents] = useState<TimelineEvent[]>([
     { status: "submitted", actor: "you", ts: baseTime },
   ]);
-  const [running, setRunning] = useState(false);
   const timers = useRef<number[]>([]);
-
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const money = (n: number) =>
     new Intl.NumberFormat(locale, {
@@ -67,7 +64,7 @@ export function ClaimLiveTracker({
 
   const reached = (s: ClaimStatus) => PATH.indexOf(current) >= PATH.indexOf(s);
 
-  // Applique une mise à jour de statut, qu'elle vienne du SSE réel ou de la simulation.
+  // Applique une mise à jour de statut reçue via SSE.
   const applyStatus = useCallback(
     (st: ClaimStatus, actor: "you" | "system") => {
       setCurrent(st);
@@ -81,8 +78,7 @@ export function ClaimLiveTracker({
     [ts, t],
   );
 
-  // Vrai temps réel : EventSource sur le canal XPulse du sinistre (si l'API est configurée).
-  // En démo (pas d'API), on retombe sur le bouton "Simuler".
+  // EventSource sur le canal XPulse du sinistre (si l'API est configurée).
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_URL;
     if (!base) return;
@@ -99,32 +95,14 @@ export function ClaimLiveTracker({
       }
     };
     es.onerror = () => {
-      /* EventSource se reconnecte seul ; en démo sans backend, on ignore */
+      /* EventSource se reconnecte seul */
     };
     return () => es.close();
   }, [id, applyStatus]);
 
-  function play() {
-    if (running) return;
-    const rest = PATH.slice(PATH.indexOf(current) + 1);
-    if (rest.length === 0) return;
-    setRunning(true);
-    rest.forEach((st, i) => {
-      const tid = window.setTimeout(
-        () => {
-          applyStatus(st, "system");
-          if (i === rest.length - 1) setRunning(false);
-        },
-        (i + 1) * 1500,
-      );
-      timers.current.push(tid);
-    });
-  }
-
   function reset() {
     timers.current.forEach(clearTimeout);
     timers.current = [];
-    setRunning(false);
     setCurrent("submitted");
     setEvents([{ status: "submitted", actor: "you", ts: baseTime }]);
   }
@@ -194,13 +172,9 @@ export function ClaimLiveTracker({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span className="inline-flex items-center gap-2 rounded-full bg-emerald/10 px-3 py-1.5 text-xs font-medium text-emerald">
           <Wifi className="size-3.5 animate-pulse" />
-          {running ? t("live.running") : t("live.on")}
+          {t("live.on")}
         </span>
         <div className="flex gap-2">
-          <Button size="sm" onClick={play} disabled={running || current === "closed"}>
-            <Play />
-            {t("live.play")}
-          </Button>
           <Button size="sm" variant="outline" onClick={reset}>
             <RotateCcw />
             {t("live.reset")}

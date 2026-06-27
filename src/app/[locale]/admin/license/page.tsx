@@ -1,19 +1,19 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/components/auth-provider";
 
-const ADMIN = { name: "David Laurent", email: "david@assureur-demo.com" };
+export default function AdminLicensePage() {
+  const t = useTranslations("adminPages.license");
+  const { user } = useAuth();
 
-export default async function AdminLicensePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations("adminPages.license");
+  const sidebarUser = user
+    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    : { name: "", email: "" };
 
   const usage = [
     { label: t("claimsUsage"), used: 142, limit: 200 },
@@ -21,7 +21,7 @@ export default async function AdminLicensePage({
   ];
 
   return (
-    <AppShell role="admin" user={ADMIN} title={t("title")} unread={3}>
+    <AppShell role="admin" user={sidebarUser} title={t("title")} unread={3}>
       <div className="grid max-w-3xl gap-6 md:grid-cols-2">
         {/* Current plan */}
         <div className="rounded-xl border bg-primary p-6 text-primary-foreground shadow-sm">

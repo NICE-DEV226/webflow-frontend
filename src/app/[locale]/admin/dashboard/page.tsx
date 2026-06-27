@@ -1,4 +1,7 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import {
   AlertTriangle,
   Banknote,
@@ -20,23 +23,38 @@ import { BarChart } from "@/components/charts/bar-chart";
 import { PeriodTabs } from "@/components/admin/period-tabs";
 import { CLAIM_STATUS } from "@/lib/claim-status";
 import { CLAIM_TYPE } from "@/lib/claim-type";
-import { ADMIN_RECENT, ADMIN_STATUS_DIST, ADMIN_VOLUME } from "@/lib/mock-claims";
+import {
+  getAdminStatusDistribution,
+  getAdminVolume,
+  getAdminRecentClaims,
+  type StatusDistribution,
+  type VolumeDataPoint,
+  type RecentClaim,
+} from "@/lib/api/claims";
+import { useAuth } from "@/components/auth-provider";
 
-const ADMIN = { name: "David Laurent", email: "david@assureur-demo.com" };
+export default function AdminDashboardPage() {
+  const t = useTranslations("admin");
+  const tNav = useTranslations("nav.admin");
+  const ts = useTranslations("claimStatus");
+  const tType = useTranslations("claimForm.fields.claim_type.options");
+  const tTable = useTranslations("dashboard.claimant.table");
+  const locale = useLocale();
+  const { user } = useAuth();
 
-export default async function AdminDashboardPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+  const [recent, setRecent] = useState<RecentClaim[]>([]);
+  const [statusDist, setStatusDist] = useState<StatusDistribution[]>([]);
+  const [volume, setVolume] = useState<VolumeDataPoint[]>([]);
 
-  const t = await getTranslations("admin");
-  const tNav = await getTranslations("nav.admin");
-  const ts = await getTranslations("claimStatus");
-  const tType = await getTranslations("claimForm.fields.claim_type.options");
-  const tTable = await getTranslations("dashboard.claimant.table");
+  useEffect(() => {
+    getAdminRecentClaims().then(setRecent);
+    getAdminStatusDistribution().then(setStatusDist);
+    getAdminVolume().then(setVolume);
+  }, []);
+
+  const sidebarUser = user
+    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    : { name: "", email: "" };
 
   const money = (n: number) =>
     new Intl.NumberFormat(locale, {
@@ -45,14 +63,16 @@ export default async function AdminDashboardPage({
       maximumFractionDigits: 0,
     }).format(n);
 
+  const totalClaims = statusDist.reduce((sum, d) => sum + d.value, 0);
+
   const kpis = [
-    { label: t("kpi.totalClaims"), value: "142", icon: FileText, color: "#1E3A5F", trend: { up: true, good: true, text: "+12%" } },
+    { label: t("kpi.totalClaims"), value: String(totalClaims), icon: FileText, color: "#1E3A5F", trend: { up: true, good: true, text: "+12%" } },
     { label: t("kpi.avgTime"), value: "18h 24m", icon: Clock, color: "#F59E0B", trend: { up: false, good: true, text: "-2h" } },
     { label: t("kpi.approvalRate"), value: "87%", icon: CheckCircle, color: "#1D9E75", trend: { up: true, good: true, text: "+3%" } },
     { label: t("kpi.totalReimbursed"), value: money(94200), icon: Banknote, color: "#1E3A5F", trend: null },
   ];
 
-  const segments = ADMIN_STATUS_DIST.map((d) => ({
+  const segments = statusDist.map((d) => ({
     label: ts(d.status),
     value: d.value,
     color: CLAIM_STATUS[d.status].fg,
@@ -61,7 +81,7 @@ export default async function AdminDashboardPage({
   return (
     <AppShell
       role="admin"
-      user={ADMIN}
+      user={sidebarUser}
       title={tNav("dashboard")}
       unread={3}
       actions={<PeriodTabs />}
@@ -109,7 +129,7 @@ export default async function AdminDashboardPage({
           <h2 className="mb-5 text-sm font-semibold text-foreground">
             {t("charts.volume")}
           </h2>
-          <BarChart data={ADMIN_VOLUME} />
+          <BarChart data={volume.map((d) => d.count)} />
         </div>
 
         <div className="rounded-xl border bg-card p-5 shadow-sm">
@@ -119,7 +139,7 @@ export default async function AdminDashboardPage({
           <div className="flex flex-wrap items-center justify-center gap-6 sm:justify-between">
             <DonutChart
               segments={segments}
-              centerValue="142"
+              centerValue={String(totalClaims)}
               centerLabel={t("charts.totalLabel")}
             />
             <ul className="space-y-2.5">
@@ -155,7 +175,7 @@ export default async function AdminDashboardPage({
           <Info className="mt-0.5 size-5 shrink-0 text-info" />
           <div className="flex-1">
             <p className="text-sm text-foreground">
-              {t("alerts.quota", { used: 142, limit: 200, percent: 71 })}
+              {t("alerts.quota", { used: totalClaims, limit: 200, percent: Math.round((totalClaims / 200) * 100) })}
             </p>
             <Link href="/admin/license" className="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-emerald hover:underline">
               {t("alerts.upgrade")}
@@ -195,7 +215,7 @@ export default async function AdminDashboardPage({
               </tr>
             </thead>
             <tbody>
-              {ADMIN_RECENT.map((c) => {
+              {recent.map((c) => {
                 const type = CLAIM_TYPE[c.type];
                 const TypeIcon = type.icon;
                 return (

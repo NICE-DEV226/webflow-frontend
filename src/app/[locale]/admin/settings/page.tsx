@@ -1,21 +1,21 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { SettingsForm } from "@/components/admin/settings-form";
+import { useAuth } from "@/components/auth-provider";
 
-const ADMIN = { name: "David Laurent", email: "david@assureur-demo.com" };
+export default function AdminSettingsPage() {
+  const t = useTranslations("adminPages.settings");
+  const { user } = useAuth();
 
-export default async function AdminSettingsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations("adminPages.settings");
+  const sidebarUser = user
+    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    : { name: "", email: "" };
 
   return (
-    <AppShell role="admin" user={ADMIN} title={t("title")} unread={3}>
+    <AppShell role="admin" user={sidebarUser} title={t("title")} unread={3}>
       <SettingsForm />
     </AppShell>
   );

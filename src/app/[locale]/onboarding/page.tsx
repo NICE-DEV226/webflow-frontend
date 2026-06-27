@@ -28,6 +28,7 @@ const STEP_LABELS: Record<Step, string> = {
 export default function OnboardingPage() {
   const t = useTranslations();
   const [step, setStep] = useState<Step>("company");
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   const currentIdx = STEPS.findIndex((s) => s.key === step);
   const progress = ((currentIdx + 1) / STEPS.length) * 100;
@@ -96,14 +97,22 @@ export default function OnboardingPage() {
 
       {/* Content */}
       <main className="mx-auto mt-8 max-w-3xl px-6 pb-16">
-        {step === "company" && <CompanyStep onNext={() => setStep("plan")} />}
-        {step === "plan" && (
+        {step === "company" && (
+          <CompanyStep
+            onNext={(id) => {
+              setSessionId(id);
+              setStep("plan");
+            }}
+          />
+        )}
+        {step === "plan" && sessionId && (
           <PlanStep
+            sessionId={sessionId}
             onNext={() => setStep("success")}
             onBack={() => setStep("company")}
           />
         )}
-        {step === "success" && <SuccessStep />}
+        {step === "success" && sessionId && <SuccessStep sessionId={sessionId} />}
       </main>
     </div>
   );

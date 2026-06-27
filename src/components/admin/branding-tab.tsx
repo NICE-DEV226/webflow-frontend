@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Upload, RotateCcw } from "lucide-react";
@@ -8,19 +8,35 @@ import { Upload, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useTenant } from "@/components/tenant-provider";
-import { updateTenantBranding, updateTenantInfo, getTenant } from "@/lib/mock-tenants";
+import { useAuth } from "@/components/auth-provider";
+import { updateTenantBranding, updateTenantInfo, getTenant } from "@/lib/api/tenants";
+
+const DEFAULTS = {
+  name: "",
+  primaryColor: "#1E3A5F",
+  secondaryColor: "#1D9E75",
+};
 
 export function BrandingTab() {
   const t = useTranslations("adminPages.settings");
-  const tenantCtx = useTenant();
-  const stored = getTenant(tenantCtx.slug);
+  const { user } = useAuth();
+  const tenantSlug = user?.tenantSlug ?? "";
 
-  const [name, setName] = useState(stored?.name ?? tenantCtx.name);
-  const [primaryColor, setPrimaryColor] = useState(stored?.branding.primaryColor ?? tenantCtx.color);
-  const [secondaryColor, setSecondaryColor] = useState(stored?.branding.secondaryColor ?? "#1D9E75");
-  const [logoPreview, setLogoPreview] = useState<string | null>(stored?.branding.logoUrl ?? null);
+  const [name, setName] = useState(DEFAULTS.name);
+  const [primaryColor, setPrimaryColor] = useState(DEFAULTS.primaryColor);
+  const [secondaryColor, setSecondaryColor] = useState(DEFAULTS.secondaryColor);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!tenantSlug) return;
+    getTenant(tenantSlug).then((tenant) => {
+      setName(tenant.name);
+      setPrimaryColor(tenant.branding.primaryColor);
+      setSecondaryColor(tenant.branding.secondaryColor);
+      setLogoPreview(tenant.branding.logoUrl);
+    }).catch(() => {});
+  }, [tenantSlug]);
 
   function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -32,20 +48,26 @@ export function BrandingTab() {
 
   async function handleSave() {
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 500));
-    updateTenantInfo(tenantCtx.slug, { name, color: primaryColor });
-    updateTenantBranding(tenantCtx.slug, {
-      primaryColor,
-      secondaryColor,
-      logoUrl: logoPreview,
-    });
-    toast.success(t("branding.saved"));
-    setSaving(false);
+    try {
+      await Promise.all([
+        updateTenantInfo(tenantSlug, { name }),
+        updateTenantBranding(tenantSlug, {
+          primaryColor,
+          secondaryColor,
+          logoUrl: logoPreview,
+        }),
+      ]);
+      toast.success(t("branding.saved"));
+    } catch {
+      toast.error(t("branding.error"));
+    } finally {
+      setSaving(false);
+    }
   }
 
   function handleReset() {
-    setPrimaryColor("#1E3A5F");
-    setSecondaryColor("#1D9E75");
+    setPrimaryColor(DEFAULTS.primaryColor);
+    setSecondaryColor(DEFAULTS.secondaryColor);
     setLogoPreview(null);
   }
 

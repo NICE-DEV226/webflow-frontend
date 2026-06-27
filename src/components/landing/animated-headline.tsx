@@ -25,11 +25,11 @@ export function AnimatedHeadline() {
   return (
     <h1 className="mt-5 text-4xl font-extrabold tracking-[-0.03em] text-primary sm:text-[3.25rem] sm:leading-[1.05]">
       {t("titleLead")}
-      <span className="relative mt-1 flex h-[1.15em] w-full overflow-hidden">
+      <span className="relative mt-1 flex min-h-[1.15em] w-full overflow-hidden">
         {words.map((word, i) => (
           <motion.span
             key={word}
-            className="absolute left-0 whitespace-nowrap text-emerald"
+            className="absolute left-0 text-balance text-emerald"
             initial={{ opacity: 0, y: "-110%" }}
             animate={
               index === i

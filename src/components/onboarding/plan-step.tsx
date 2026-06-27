@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Check, Sparkles, Shield, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { saveOnboardingPlan, type PlanTier } from "@/lib/mock-tenants";
+import { saveOnboardingPlan, type PlanTier } from "@/lib/api/tenants";
 import { cn } from "@/lib/utils";
 
 const PLANS: { tier: PlanTier; icon: typeof Zap; price: string; desc: string; features: string[] }[] = [
@@ -50,14 +50,18 @@ const PLANS: { tier: PlanTier; icon: typeof Zap; price: string; desc: string; fe
   },
 ];
 
-export function PlanStep({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+export function PlanStep({ sessionId, onNext, onBack }: { sessionId: string; onNext: () => void; onBack: () => void }) {
   const t = useTranslations("onboarding");
   const [selected, setSelected] = useState<PlanTier | null>(null);
 
-  function handleContinue() {
+  async function handleContinue() {
     if (!selected) return;
-    saveOnboardingPlan(selected);
-    onNext();
+    try {
+      await saveOnboardingPlan(sessionId, selected);
+      onNext();
+    } catch {
+      // error handled by caller
+    }
   }
 
   return (
