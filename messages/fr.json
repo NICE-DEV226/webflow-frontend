@@ -73,6 +73,12 @@
       "audit": "Piste d'audit",
       "settings": "Paramètres",
       "license": "Licence"
+    },
+    "superadmin": {
+      "dashboard": "Vue d'ensemble",
+      "tenants": "Tenants",
+      "licenses": "Licences",
+      "audit": "Piste d'audit"
     }
   },
   "roles": {
@@ -575,6 +581,49 @@
     "viewClaim": "Voir le sinistre",
     "backToClaims": "Retour à mes sinistres",
     "securedBy": "Sécurisé par Stripe"
+  },
+  "superAdminPages": {
+    "dashboard": {
+      "title": "Vue d'ensemble",
+      "subtitle": "Métriques de la plateforme multi-tenant.",
+      "totalTenants": "Total tenants",
+      "totalClaims": "Total sinistres",
+      "activeUsers": "Utilisateurs actifs",
+      "monthlyRevenue": "Revenu mensuel"
+    },
+    "tenants": {
+      "title": "Tenants",
+      "subtitle": "Gérer toutes les compagnies d'assurance.",
+      "slug": "Slug",
+      "name": "Nom",
+      "plan": "Offre",
+      "status": "Statut",
+      "active": "Actif",
+      "suspended": "Suspendu",
+      "actions": "Actions",
+      "suspend": "Suspendre",
+      "activate": "Activer",
+      "empty": "Aucun tenant enregistré."
+    },
+    "licenses": {
+      "title": "Licences & Facturation",
+      "subtitle": "Suivi des abonnements de tous les tenants.",
+      "tenant": "Tenant",
+      "plan": "Offre",
+      "status": "Statut",
+      "trialEnds": "Fin d'essai",
+      "active": "Actif",
+      "expired": "Expiré",
+      "trial": "Essai"
+    },
+    "audit": {
+      "title": "Piste d'audit",
+      "subtitle": "Journal d'audit cross-tenant immuable.",
+      "actor": "Acteur",
+      "action": "Action",
+      "target": "Cible",
+      "when": "Quand"
+    }
   },
   "adminPages": {
     "claims": { "title": "Tous les sinistres" },

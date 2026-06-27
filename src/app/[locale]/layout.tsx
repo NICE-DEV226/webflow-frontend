@@ -36,7 +36,6 @@ export const metadata: Metadata = {
     "Claims management platform for insurers: submission, automatic validation, real-time tracking and payout, in one traceable pipeline.",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
       { url: "/icon.svg", type: "image/svg+xml" },
       { url: "/icon.png", type: "image/png" },
     ],

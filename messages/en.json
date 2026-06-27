@@ -73,6 +73,12 @@
       "audit": "Audit trail",
       "settings": "Settings",
       "license": "License"
+    },
+    "superadmin": {
+      "dashboard": "Platform Overview",
+      "tenants": "Tenants",
+      "licenses": "Licenses",
+      "audit": "Audit trail"
     }
   },
   "roles": {
@@ -575,6 +581,49 @@
     "viewClaim": "View claim",
     "backToClaims": "Back to my claims",
     "securedBy": "Secured by Stripe"
+  },
+  "superAdminPages": {
+    "dashboard": {
+      "title": "Platform Overview",
+      "subtitle": "Multi-tenant platform metrics at a glance.",
+      "totalTenants": "Total tenants",
+      "totalClaims": "Total claims",
+      "activeUsers": "Active users",
+      "monthlyRevenue": "Monthly revenue"
+    },
+    "tenants": {
+      "title": "Tenants",
+      "subtitle": "Manage all insurance companies on the platform.",
+      "slug": "Slug",
+      "name": "Name",
+      "plan": "Plan",
+      "status": "Status",
+      "active": "Active",
+      "suspended": "Suspended",
+      "actions": "Actions",
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "empty": "No tenants registered yet."
+    },
+    "licenses": {
+      "title": "Licenses & Billing",
+      "subtitle": "Track subscriptions across all tenants.",
+      "tenant": "Tenant",
+      "plan": "Plan",
+      "status": "Status",
+      "trialEnds": "Trial ends",
+      "active": "Active",
+      "expired": "Expired",
+      "trial": "Trial"
+    },
+    "audit": {
+      "title": "Audit trail",
+      "subtitle": "Cross-tenant immutable audit log.",
+      "actor": "Actor",
+      "action": "Action",
+      "target": "Target",
+      "when": "When"
+    }
   },
   "adminPages": {
     "claims": { "title": "All claims" },

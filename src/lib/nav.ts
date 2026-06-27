@@ -1,5 +1,7 @@
 import {
+  Activity,
   Bell,
+  Building2,
   ClipboardCheck,
   CreditCard,
   FilePlus,
@@ -14,7 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export type Role = "claimant" | "agent" | "admin";
+export type Role = "claimant" | "agent" | "admin" | "superadmin";
 
 export interface NavItem {
   /** Clé i18n sous `nav.<role>.<key>`. */
@@ -47,6 +49,12 @@ export const NAV: Record<Role, NavItem[]> = {
     { key: "settings", href: "/admin/settings", icon: Settings },
     { key: "license", href: "/admin/license", icon: CreditCard },
   ],
+  superadmin: [
+    { key: "dashboard", href: "/super-admin/dashboard", icon: Activity },
+    { key: "tenants", href: "/super-admin/tenants", icon: Building2 },
+    { key: "licenses", href: "/super-admin/licenses", icon: CreditCard },
+    { key: "audit", href: "/super-admin/audit", icon: Shield },
+  ],
 };
 
 /** Page d'accueil de chaque rôle (pour la redirection post-login). */
@@ -54,4 +62,5 @@ export const ROLE_HOME: Record<Role, string> = {
   claimant: "/dashboard/claims",
   agent: "/agent/queue",
   admin: "/admin/dashboard",
+  superadmin: "/super-admin/dashboard",
 };

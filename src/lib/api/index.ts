@@ -4,3 +4,4 @@ export * from "./tenants";
 export * from "./claims";
 export * from "./public-links";
 export * from "./agents";
+export * from "./platform";

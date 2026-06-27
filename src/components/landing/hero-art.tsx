@@ -28,11 +28,13 @@ export function HeroArt() {
       <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-emerald/10 blur-2xl" />
 
       <motion.div
+        suppressHydrationWarning
         initial={reduce ? false : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.div
+          suppressHydrationWarning
           className="relative"
           animate={reduce ? undefined : { y: [0, -7, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
@@ -96,6 +98,7 @@ export function HeroArt() {
 
             {/* event ticker (staggered) */}
             <motion.div
+              suppressHydrationWarning
               className="mt-3 space-y-2"
               initial={reduce ? false : "hidden"}
               animate="show"
@@ -105,6 +108,7 @@ export function HeroArt() {
             >
               {EVENTS.map((e) => (
                 <motion.div
+                  suppressHydrationWarning
                   key={e.label}
                   className="flex items-center justify-between text-xs"
                   variants={{

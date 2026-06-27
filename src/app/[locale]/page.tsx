@@ -5,8 +5,8 @@ import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { SiteHeader } from "@/components/landing/site-header";
 import { SiteFooter } from "@/components/landing/site-footer";
-import { HeroArt } from "@/components/landing/hero-art";
 import { AnimatedHeadline } from "@/components/landing/animated-headline";
+import { ClientHeroArt } from "@/components/landing/client-hero-art";
 import { DisplayCards } from "@/components/ui/display-cards";
 import { ClaimLifecycleFlow } from "@/components/claim/claim-lifecycle-flow";
 import { cn } from "@/lib/utils";
@@ -79,7 +79,7 @@ export default async function LandingPage({
               </div>
             </div>
 
-            <HeroArt />
+            <ClientHeroArt />
           </div>
 
           {/* SOCIAL PROOF — ledger voice (mono figures) */}

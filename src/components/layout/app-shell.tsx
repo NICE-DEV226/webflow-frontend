@@ -20,6 +20,7 @@ const NOTIF_HREF: Record<Role, string> = {
   claimant: "/dashboard/notifications",
   agent: "/agent/notifications",
   admin: "/admin/dashboard",
+  superadmin: "/super-admin/dashboard",
 };
 
 export function AppShell({

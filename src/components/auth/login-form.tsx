@@ -24,6 +24,7 @@ const ROLE_ROUTES: Record<string, string> = {
   admin: "/admin/dashboard",
   agent: "/agent/queue",
   claimant: "/dashboard/claims",
+  superadmin: "/super-admin/dashboard",
 };
 
 export function LoginForm() {
