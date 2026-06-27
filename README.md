@@ -1,7 +1,6 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="/brand/logo.png">
-  <img alt="ClaimFlow" src="/brand/logo.png" width="160" height="160">
-</picture>
+<p align="center">
+  <img alt="ClaimFlow" src="https://raw.githubusercontent.com/NICE-DEV226/webflow-frontend/main/public/brand/logo.png" width="160" height="160">
+</p>
 
 # ClaimFlow
 
