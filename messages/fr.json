@@ -1,0 +1,672 @@
+{
+  "common": {
+    "appName": "ClaimFlow",
+    "tagline": "De la déclaration au remboursement, en un pipeline traçable.",
+    "language": "Langue",
+    "english": "English",
+    "french": "Français"
+  },
+  "actions": {
+    "submitClaim": "Soumettre le sinistre",
+    "approve": "Approuver le dossier",
+    "partial": "Approbation partielle",
+    "reject": "Rejeter",
+    "cancel": "Annuler",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "viewDetails": "Voir les détails",
+    "save": "Enregistrer",
+    "newClaim": "Nouveau sinistre",
+    "addDocument": "Ajouter un document",
+    "upgrade": "Changer d'offre"
+  },
+  "claimStatus": {
+    "draft": "Brouillon",
+    "submitted": "Soumis",
+    "under_review": "En examen",
+    "evaluation": "En évaluation",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "paid": "Remboursé",
+    "closed": "Clôturé"
+  },
+  "lifecycle": {
+    "title": "Cycle de vie du sinistre",
+    "subtitle": "Calqué sur le pipeline XFlow réel. Le nœud en surbrillance suit la progression du dossier.",
+    "node": {
+      "submitted": "Dossier reçu",
+      "approved": "Montant validé",
+      "paid": "Virement Stripe",
+      "closed": "Dossier archivé",
+      "under_review": "File agent",
+      "evaluation": "Rapport agent",
+      "rejected": "Motif notifié"
+    },
+    "cond": {
+      "amount": "Montant ≤ seuil ?",
+      "decision": "Décision agent"
+    },
+    "edge": {
+      "auto": "auto · ≤ seuil",
+      "agent": "agent · > seuil",
+      "approved": "approuvé",
+      "rejected": "rejeté"
+    }
+  },
+  "nav": {
+    "claimant": {
+      "claims": "Mes sinistres",
+      "newClaim": "Nouveau sinistre",
+      "notifications": "Notifications"
+    },
+    "agent": {
+      "queue": "File d'attente",
+      "evaluations": "Mes évaluations",
+      "notifications": "Notifications"
+    },
+    "admin": {
+      "dashboard": "Tableau de bord",
+      "claims": "Tous les sinistres",
+      "workflow": "Workflow",
+      "agents": "Agents",
+      "audit": "Piste d'audit",
+      "settings": "Paramètres",
+      "license": "Licence"
+    }
+  },
+  "roles": {
+    "claimant": "Assuré",
+    "agent": "Agent évaluateur",
+    "admin": "Administrateur",
+    "superadmin": "Super admin"
+  },
+  "styleguide": {
+    "badge": "Design System · v0.1",
+    "palette": "Palette",
+    "typography": "Typographie · Inter",
+    "buttons": "Boutons",
+    "statuses": "Statuts de sinistre",
+    "statusesSource": "Source unique de vérité",
+    "lifecycleView": "Cycle de vie · vue flux",
+    "sidebar": "Sidebar signature",
+    "sidebarNote": "Zone de contenu (Cloud White). La sidebar Navy est l'élément signature de l'identité ClaimFlow."
+  },
+  "xform": {
+    "submit": "Envoyer",
+    "sending": "Envoi…",
+    "optional": "facultatif",
+    "selectPlaceholder": "Sélectionner…",
+    "fileDrop": "Glissez-déposez ou cliquez pour téléverser",
+    "fileChange": "Changer de fichier",
+    "success": "Merci ! Votre soumission a bien été enregistrée.",
+    "errors": {
+      "required": "Ce champ est obligatoire",
+      "email": "Saisissez une adresse e-mail valide",
+      "minLength": "Au moins {min} caractères",
+      "maxLength": "Au plus {max} caractères",
+      "pattern": "Format invalide",
+      "number": "Saisissez un nombre valide",
+      "minValue": "Doit être au moins {min}",
+      "maxValue": "Doit être au plus {max}"
+    }
+  },
+  "claimForm": {
+    "title": "Déclarer un sinistre",
+    "description": "Dites-nous ce qui s'est passé. Plus vous donnez de détails, plus vite nous traitons votre dossier.",
+    "preview": {
+      "caption": "Aperçu data-driven · champs conditionnels selon le type de sinistre"
+    },
+    "fields": {
+      "claim_type": {
+        "label": "Type de sinistre",
+        "options": {
+          "health": "Santé",
+          "vehicle": "Automobile",
+          "property": "Habitation",
+          "liability": "Responsabilité civile",
+          "other": "Autre"
+        }
+      },
+      "policy_number": {
+        "label": "Numéro de police",
+        "placeholder": "ex. POL-2026-00421"
+      },
+      "mutual_number": { "label": "Numéro de mutuelle" },
+      "plate_number": {
+        "label": "Immatriculation",
+        "placeholder": "ex. AB-123-CD"
+      },
+      "property_address": { "label": "Adresse du bien" },
+      "sec_details": { "label": "Détails de l'incident" },
+      "incident_date": { "label": "Date de l'incident" },
+      "amount_claimed": { "label": "Montant réclamé", "placeholder": "0" },
+      "currency": { "label": "Devise" },
+      "description": {
+        "label": "Description",
+        "placeholder": "Décrivez ce qui s'est passé…",
+        "help": "Jusqu'à 500 caractères."
+      },
+      "document": {
+        "label": "Pièce justificative",
+        "help": "Photo ou PDF, jusqu'à 10 Mo."
+      }
+    }
+  },
+  "landing": {
+    "nav": {
+      "features": "Fonctionnalités",
+      "pipeline": "Pipeline",
+      "pricing": "Tarifs",
+      "signIn": "Se connecter",
+      "getStarted": "Commencer"
+    },
+    "hero": {
+      "badge": "Temps réel · Automatisé · Conforme audit",
+      "title": "De la déclaration au remboursement — en moins de 24h.",
+      "titleLead": "De la déclaration au remboursement,",
+      "rotating": ["en moins de 24 h", "100 % automatisé", "traçable de bout en bout", "prêt pour l'audit"],
+      "subtitle": "ClaimFlow automatise votre gestion de sinistres de bout en bout. Moins de délais. Moins d'erreurs. Plus de clients satisfaits.",
+      "ctaPrimary": "Essai gratuit 14 jours",
+      "ctaSecondary": "Voir la démo →"
+    },
+    "stats": {
+      "claimsValue": "3 200",
+      "claims": "dossiers traités",
+      "satisfactionValue": "94%",
+      "satisfaction": "de satisfaction client",
+      "avgTimeValue": "18h",
+      "avgTime": "délai moyen de traitement"
+    },
+    "problem": {
+      "title": "Fini le bricolage Excel + emails",
+      "subtitle": "Lent pour le client, opaque pour le régulateur, coûteux pour vous. Il y a mieux.",
+      "faster": {
+        "title": "Délais",
+        "body": "5 à 21 jours pour un remboursement simple. Vos clients méritent mieux."
+      },
+      "traceable": {
+        "title": "Traçabilité",
+        "body": "Aucun régulateur n'accepte un audit sur Post-it. ClaimFlow trace tout, automatiquement."
+      },
+      "automated": {
+        "title": "Paiement",
+        "body": "Chaque validation déclenche le paiement. Pas d'étape manuelle, pas d'oubli."
+      }
+    },
+    "how": {
+      "title": "Un pipeline. Quatre étapes. Zéro friction.",
+      "subtitle": "Du premier signalement au remboursement, chaque étape se gère toute seule.",
+      "declare": {
+        "title": "Déclarer",
+        "body": "L'assuré soumet un sinistre avec photos et documents via un formulaire intelligent et adaptatif."
+      },
+      "validate": {
+        "title": "Valider",
+        "body": "Les règles métier décident instantanément : auto-approbation sous le seuil, ou routage vers un évaluateur."
+      },
+      "approve": {
+        "title": "Décider",
+        "body": "L'agent examine le dossier et rend sa décision, avec tout le contexte sur un seul écran."
+      },
+      "reimburse": {
+        "title": "Payer",
+        "body": "Le paiement est déclenché automatiquement et le client est notifié en temps réel."
+      }
+    },
+    "pipeline": {
+      "title": "Voyez exactement où en est chaque sinistre",
+      "subtitle": "Chaque sinistre est routé, évalué, payé et audité automatiquement — et suivi en temps réel, de bout en bout."
+    },
+    "lob": {
+      "title": "Chaque sinistre, un seul pipeline",
+      "subtitle": "Santé, auto, habitation, responsabilité civile — ClaimFlow gère toutes les branches sur un workflow unique et traçable."
+    },
+    "pricing": {
+      "title": "Une tarification simple et transparente",
+      "subtitle": "14 jours d'essai gratuit. Sans carte bancaire.",
+      "perMonth": "/mois",
+      "mostPopular": "Le plus choisi",
+      "cta": "Commencer gratuitement",
+      "ctaEnterprise": "Contacter l'équipe",
+      "starter": {
+        "name": "Starter",
+        "price": "299 $",
+        "tagline": "Petits assureurs & MGA",
+        "features": [
+          "Jusqu'à 200 sinistres / mois",
+          "5 agents",
+          "Tous les workflows",
+          "Notifications e-mail",
+          "Piste d'audit"
+        ]
+      },
+      "growth": {
+        "name": "Growth",
+        "price": "899 $",
+        "tagline": "Assureurs mid-market",
+        "features": [
+          "Jusqu'à 1 000 sinistres / mois",
+          "25 agents",
+          "Workflows illimités",
+          "Analytics avancés",
+          "Accès API",
+          "Support prioritaire"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Sur devis",
+        "tagline": "Grands comptes",
+        "features": [
+          "Volume illimité",
+          "Agents illimités",
+          "XCore auto-hébergé",
+          "SLA garanti",
+          "Workflows sur mesure"
+        ]
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": [
+        {
+          "q": "Mes données sont-elles sécurisées ?",
+          "a": "Oui. Isolation totale entre tenants, chiffrement AES-256 et piste d'audit immuable. Vos données ne sont jamais partagées."
+        },
+        {
+          "q": "Combien de temps pour démarrer ?",
+          "a": "Quelques minutes. Créez votre espace, invitez vos agents et recevez vos premiers dossiers le jour même."
+        },
+        {
+          "q": "Puis-je importer mes sinistres existants ?",
+          "a": "Oui, par import CSV ou via notre API. Notre équipe vous accompagne."
+        },
+        {
+          "q": "Comment sont gérés les remboursements ?",
+          "a": "Les remboursements sont déclenchés automatiquement via Stripe dès l'approbation d'un sinistre."
+        },
+        {
+          "q": "ClaimFlow est-il conforme pour les régulateurs ?",
+          "a": "Chaque action est journalisée dans une piste d'audit inaltérable, pensée pour les exigences ACPR, FCA et BCEAO."
+        },
+        {
+          "q": "Que se passe-t-il après l'essai gratuit ?",
+          "a": "Choisissez l'offre adaptée. Sans engagement, résiliable à tout moment."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Prêt à diviser votre délai de traitement par 5 ?",
+      "subtitle": "Créez votre espace assureur en quelques minutes.",
+      "button": "Démarrer maintenant — gratuit 14 jours"
+    },
+    "footer": {
+      "tagline": "Gestion intelligente des sinistres, propulsée par XCore.",
+      "product": "Produit",
+      "company": "Entreprise",
+      "legal": "Légal",
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "demo": "Démo",
+      "about": "À propos",
+      "contact": "Contact",
+      "privacy": "Confidentialité",
+      "terms": "Conditions",
+      "security": "Sécurité",
+      "rights": "Tous droits réservés."
+    }
+  },
+  "dashboard": {
+    "claimant": {
+      "kpi": {
+        "total": "Total dossiers",
+        "inProgress": "En cours",
+        "reimbursed": "Remboursés",
+        "received": "Total reçu"
+      },
+      "table": {
+        "id": "ID",
+        "type": "Type",
+        "date": "Date",
+        "amount": "Montant",
+        "status": "Statut",
+        "action": "Action"
+      },
+      "view": "Voir",
+      "empty": {
+        "title": "Aucun sinistre pour le moment",
+        "body": "Déclarez votre premier sinistre pour commencer.",
+        "cta": "Nouveau sinistre"
+      }
+    }
+  },
+  "auth": {
+    "brandPitch": "De la déclaration au remboursement, en un pipeline traçable.",
+    "point1": "Sinistres automatisés, de bout en bout",
+    "point2": "Suivi temps réel de chaque dossier",
+    "point3": "Piste d'audit conforme régulateur",
+    "backHome": "Retour à l'accueil",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "demoTitle": "Ou explorez la démo en tant que",
+    "login": {
+      "title": "Bon retour",
+      "subtitle": "Connectez-vous à votre espace ClaimFlow.",
+      "forgot": "Mot de passe oublié ?",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "signUp": "Créer un compte"
+    },
+    "register": {
+      "title": "Créez votre compte",
+      "subtitle": "Démarrez votre essai gratuit de 14 jours. Sans carte bancaire.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "company": "Société",
+      "workEmail": "E-mail professionnel",
+      "submit": "Créer le compte",
+      "haveAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter",
+      "terms": "En créant un compte, vous acceptez nos Conditions et notre Politique de confidentialité."
+    },
+    "errors": {
+      "required": "Ce champ est obligatoire",
+      "email": "Saisissez une adresse e-mail valide",
+      "min": "Au moins {n} caractères"
+    }
+  },
+  "claimDetail": {
+    "back": "Retour aux sinistres",
+    "submittedOn": "Soumis le",
+    "amounts": {
+      "claimed": "Réclamé",
+      "approved": "Approuvé",
+      "reimbursed": "Remboursé"
+    },
+    "info": {
+      "title": "Informations",
+      "incidentDate": "Date du sinistre",
+      "policy": "Numéro de police",
+      "description": "Description"
+    },
+    "timelineTitle": "Chronologie",
+    "documentsTitle": "Documents",
+    "addDocument": "Ajouter un document",
+    "live": {
+      "on": "Temps réel actif",
+      "play": "Simuler les mises à jour",
+      "running": "En direct…",
+      "reset": "Réinitialiser"
+    },
+    "actor": { "system": "Système", "you": "Vous" },
+    "toastUpdate": "Statut mis à jour",
+    "viewPayout": "Voir le reçu de paiement",
+    "sampleDescription": "Aile avant droite endommagée lors d'un accrochage sur parking. Photos et constat joints."
+  },
+  "stepInfo": {
+    "hint": "Touchez une étape pour voir ses détails",
+    "submitted": "Dossier reçu et enregistré.",
+    "under_review": "Placé dans la file d'évaluation.",
+    "evaluation": "Examiné par {agent}.",
+    "approved": "Approuvé pour {amount}.",
+    "paid": "Remboursement envoyé sur votre compte enregistré.",
+    "closed": "Dossier archivé."
+  },
+  "notifications": {
+    "empty": {
+      "title": "Vous êtes à jour",
+      "body": "Les notifications sur vos sinistres apparaîtront ici en temps réel."
+    }
+  },
+  "agent": {
+    "kpi": {
+      "processedToday": "Traités aujourd'hui",
+      "avgTime": "Délai moyen de traitement",
+      "approvalRate": "Taux d'approbation"
+    },
+    "tabs": {
+      "all": "Tous",
+      "toReview": "À traiter",
+      "inProgress": "En cours",
+      "done": "Terminés"
+    },
+    "queue": {
+      "title": "File d'attente",
+      "urgent": "Urgent",
+      "claimant": "Assuré",
+      "aboveThreshold": "Au-dessus du seuil d'auto-approbation",
+      "open": "Ouvrir",
+      "empty": {
+        "title": "File vide",
+        "body": "Les nouveaux dossiers qui vous sont assignés apparaîtront ici en temps réel."
+      }
+    },
+    "evaluation": {
+      "title": "Évaluation",
+      "decision": "Décision",
+      "approve": "Approuver",
+      "partial": "Partiel",
+      "reject": "Rejeter",
+      "amountApproved": "Montant approuvé",
+      "reason": "Motif de la décision",
+      "reasonPlaceholder": "Expliquez votre décision à l'assuré…",
+      "notes": "Notes internes",
+      "notesPlaceholder": "Non visible par l'assuré…",
+      "submit": "Valider la décision",
+      "submitted": "Décision enregistrée"
+    }
+  },
+  "admin": {
+    "period": { "7d": "7 jours", "30d": "30 jours", "90d": "90 jours" },
+    "kpi": {
+      "totalClaims": "Total des sinistres",
+      "avgTime": "Délai moyen de traitement",
+      "approvalRate": "Taux d'approbation",
+      "totalReimbursed": "Remboursé ce mois-ci"
+    },
+    "charts": {
+      "volume": "Volume de sinistres",
+      "distribution": "Répartition par statut",
+      "totalLabel": "dossiers"
+    },
+    "alerts": {
+      "overdue": "{count} dossiers en retard — aucune décision depuis plus de 72h",
+      "quota": "Quota mensuel : {used}/{limit} sinistres utilisés ({percent}%)",
+      "review": "Voir",
+      "upgrade": "Mettre à niveau"
+    },
+    "license": {
+      "title": "Licence & offre",
+      "plan": "Offre",
+      "trialLeft": "{days} jours restants d'essai",
+      "activate": "Activer Growth"
+    },
+    "recent": {
+      "title": "Sinistres récents",
+      "client": "Client",
+      "agent": "Agent",
+      "unassigned": "Non assigné"
+    }
+  },
+  "onboarding": {
+    "step": "Étape",
+    "steps": {
+      "company": "Société",
+      "plan": "Offre",
+      "success": "Prêt"
+    },
+    "continue": "Continuer",
+    "back": "Retour",
+    "errors": {
+      "required": "Ce champ est obligatoire"
+    },
+    "company": {
+      "title": "Informations société",
+      "subtitle": "Parlez-nous de votre compagnie d'assurance pour configurer votre espace.",
+      "name": "Nom de la société",
+      "email": "E-mail de la société",
+      "country": "Pays",
+      "countryPlaceholder": "Sélectionnez un pays",
+      "sector": "Secteur d'assurance",
+      "sectorPlaceholder": "Sélectionnez le secteur",
+      "agents": "Nombre estimé d'agents"
+    },
+    "branding": {
+      "title": "Votre marque",
+      "subtitle": "Personnalisez l'apparence de votre société. Vos assurés verront ceci sur leurs formulaires de déclaration.",
+      "primaryColor": "Couleur principale",
+      "secondaryColor": "Couleur secondaire",
+      "logo": "Logo de la société",
+      "uploadLogo": "Téléverser un logo",
+      "preview": "Aperçu"
+    },
+    "plan": {
+      "title": "Choisissez votre offre",
+      "subtitle": "Commencez par un essai gratuit de 14 jours. Sans engagement — annulez à tout moment.",
+      "popular": "Le plus populaire",
+      "startTrial": "Démarrer l'essai gratuit",
+      "description": {
+        "starter": "Pour les petites équipes qui débutent dans l'automatisation des sinistres.",
+        "growth": "Pour les équipes en croissance qui ont besoin de workflows avancés et d'accès API.",
+        "enterprise": "Pour les grands comptes nécessitant un support dédié et un volume illimité."
+      },
+      "features": {
+        "claims100": "Jusqu'à 100 sinistres/mois",
+        "claims1000": "Jusqu'à 1 000 sinistres/mois",
+        "agents2": "Jusqu'à 2 agents",
+        "agents10": "Jusqu'à 10 agents",
+        "brandedForm": "Formulaire de sinistre personnalisé",
+        "emailSupport": "Support par e-mail",
+        "workflowConfig": "Configuration du workflow",
+        "apiAccess": "Accès API",
+        "prioritySupport": "Support prioritaire",
+        "unlimitedClaims": "Sinistres illimités",
+        "unlimitedAgents": "Agents illimités",
+        "customWorkflows": "Workflows personnalisés",
+        "dedicatedSupport": "Support dédié",
+        "whiteLabel": "White-label",
+        "sla": "SLA garanti"
+      }
+    },
+    "success": {
+      "title": "Votre espace est prêt !",
+      "subtitle": "Votre société a été créée. Voici un résumé avant de commencer.",
+      "tenantCreated": "Espace de travail créé avec succès",
+      "plan": "Offre",
+      "trial": "Fin de l'essai",
+      "slug": "URL de votre espace",
+      "guideTitle": "Guide de démarrage",
+      "guide1": "Invitez vos agents depuis la page Agents",
+      "guide2": "Générez des liens de formulaires publics à partager avec vos assurés",
+      "guide3": "Configurez votre seuil d'auto-approbation dans Paramètres",
+      "guide4": "Personnalisez vos couleurs et votre logo",
+      "guide5": "Consultez la piste d'audit pour la conformité",
+      "goToDashboard": "Accéder au tableau de bord"
+    }
+  },
+  "payment": {
+    "title": "Remboursement en route",
+    "subtitle": "Votre remboursement de {amount} a été initié. Les fonds arrivent généralement sous 2 à 3 jours ouvrés.",
+    "reference": "Référence de paiement",
+    "claim": "Sinistre",
+    "method": "Moyen de paiement",
+    "amount": "Montant",
+    "viewClaim": "Voir le sinistre",
+    "backToClaims": "Retour à mes sinistres",
+    "securedBy": "Sécurisé par Stripe"
+  },
+  "adminPages": {
+    "claims": { "title": "Tous les sinistres" },
+    "workflow": {
+      "title": "Workflow",
+      "subtitle": "Votre automatisation de sinistres. Chaque dossier suit ces étapes — auto-approuvé sous le seuil, ou routé vers un agent."
+    },
+    "agents": {
+      "title": "Agents",
+      "invite": "Inviter un agent",
+      "name": "Nom",
+      "email": "E-mail",
+      "status": "Statut",
+      "handled": "Traités",
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "audit": {
+      "title": "Piste d'audit",
+      "subtitle": "Journal immuable et inaltérable de chaque action — pensé pour les régulateurs.",
+      "actor": "Acteur",
+      "action": "Action",
+      "target": "Cible",
+      "when": "Quand"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "tabs": {
+        "branding": "Marque",
+        "publicLinks": "Liens publics",
+        "workflow": "Workflow"
+      },
+      "branding": {
+        "companyName": "Nom de la société",
+        "logo": "Logo",
+        "upload": "Téléverser un logo",
+        "primaryColor": "Couleur principale",
+        "secondaryColor": "Couleur secondaire",
+        "preview": "Aperçu",
+        "previewSub": "Aperçu de votre marque",
+        "save": "Enregistrer",
+        "saved": "Marque mise à jour",
+        "reset": "Réinitialiser"
+      },
+      "publicLinks": {
+        "description": "Partagez ces liens avec vos assurés pour qu'ils déclarent leurs sinistres en ligne.",
+        "new": "Nouveau lien",
+        "createTitle": "Créer un lien de formulaire public",
+        "createDescription": "Chaque lien génère un formulaire de sinistre personnalisé que vous pouvez partager par e-mail, WhatsApp ou intégrer sur votre site.",
+        "formTitle": "Titre du formulaire",
+        "formSlug": "Slug URL",
+        "create": "Créer le lien",
+        "cancel": "Annuler",
+        "created": "Lien créé",
+        "deleted": "Lien supprimé",
+        "copied": "Lien copié !",
+        "copy": "Copier le lien",
+        "activate": "Activer",
+        "deactivate": "Désactiver",
+        "delete": "Supprimer",
+        "empty": "Aucun lien public pour le moment. Créez le premier pour commencer à recevoir des déclarations en ligne.",
+        "errors": {
+          "required": "Le titre et le slug sont obligatoires",
+          "duplicate": "Un lien avec ce slug existe déjà"
+        }
+      },
+      "workflow": {
+        "routing": "Stratégie de routage",
+        "roundRobin": "Round-robin",
+        "loadBalanced": "Équilibré",
+        "manual": "Assignation manuelle",
+        "routingHelp": "Comment les sinistres au-dessus du seuil sont assignés aux agents.",
+        "autoReject": "Rejet automatique après",
+        "days": "jours sans décision",
+        "autoRejectHelp": "Les sinistres sans décision passée cette durée sont automatiquement rejetés.",
+        "save": "Enregistrer",
+        "saved": "Workflow mis à jour",
+        "reset": "Réinitialiser"
+      },
+      "autoApprove": "Seuil d'auto-approbation",
+      "autoApproveHelp": "Les sinistres inférieurs ou égaux à ce montant sont approuvés automatiquement ; les autres sont routés vers un agent.",
+      "save": "Enregistrer",
+      "saved": "Paramètres enregistrés"
+    },
+    "license": {
+      "title": "Licence & offre",
+      "current": "Offre actuelle",
+      "trial": "Essai — {days} jours restants",
+      "usage": "Consommation du mois",
+      "claimsUsage": "Sinistres",
+      "agentsUsage": "Agents",
+      "upgrade": "Passer à Growth"
+    }
+  }
+}

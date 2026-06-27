@@ -1,0 +1,672 @@
+{
+  "common": {
+    "appName": "ClaimFlow",
+    "tagline": "From claim to payout, in one traceable pipeline.",
+    "language": "Language",
+    "english": "English",
+    "french": "Français"
+  },
+  "actions": {
+    "submitClaim": "Submit claim",
+    "approve": "Approve claim",
+    "partial": "Partial approval",
+    "reject": "Reject",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "viewDetails": "View details",
+    "save": "Save",
+    "newClaim": "New claim",
+    "addDocument": "Add document",
+    "upgrade": "Upgrade plan"
+  },
+  "claimStatus": {
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "under_review": "Under review",
+    "evaluation": "In evaluation",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "paid": "Paid out",
+    "closed": "Closed"
+  },
+  "lifecycle": {
+    "title": "Claim lifecycle",
+    "subtitle": "Mirrors the real XFlow pipeline. The highlighted node tracks the claim's progress.",
+    "node": {
+      "submitted": "Claim received",
+      "approved": "Amount validated",
+      "paid": "Stripe transfer",
+      "closed": "Claim archived",
+      "under_review": "Agent queue",
+      "evaluation": "Agent report",
+      "rejected": "Reason notified"
+    },
+    "cond": {
+      "amount": "Amount ≤ threshold?",
+      "decision": "Agent decision"
+    },
+    "edge": {
+      "auto": "auto · ≤ threshold",
+      "agent": "agent · > threshold",
+      "approved": "approved",
+      "rejected": "rejected"
+    }
+  },
+  "nav": {
+    "claimant": {
+      "claims": "My claims",
+      "newClaim": "New claim",
+      "notifications": "Notifications"
+    },
+    "agent": {
+      "queue": "Queue",
+      "evaluations": "My evaluations",
+      "notifications": "Notifications"
+    },
+    "admin": {
+      "dashboard": "Dashboard",
+      "claims": "All claims",
+      "workflow": "Workflow",
+      "agents": "Agents",
+      "audit": "Audit trail",
+      "settings": "Settings",
+      "license": "License"
+    }
+  },
+  "roles": {
+    "claimant": "Policyholder",
+    "agent": "Claims agent",
+    "admin": "Administrator",
+    "superadmin": "Super admin"
+  },
+  "styleguide": {
+    "badge": "Design System · v0.1",
+    "palette": "Palette",
+    "typography": "Typography · Inter",
+    "buttons": "Buttons",
+    "statuses": "Claim statuses",
+    "statusesSource": "Single source of truth",
+    "lifecycleView": "Lifecycle · flow view",
+    "sidebar": "Signature sidebar",
+    "sidebarNote": "Content area (Cloud White). The navy sidebar is the signature element of the ClaimFlow identity."
+  },
+  "xform": {
+    "submit": "Submit",
+    "sending": "Sending…",
+    "optional": "optional",
+    "selectPlaceholder": "Select…",
+    "fileDrop": "Drag & drop or click to upload",
+    "fileChange": "Change file",
+    "success": "Thank you! Your submission has been recorded.",
+    "errors": {
+      "required": "This field is required",
+      "email": "Enter a valid email address",
+      "minLength": "Must be at least {min} characters",
+      "maxLength": "Must be at most {max} characters",
+      "pattern": "Invalid format",
+      "number": "Enter a valid number",
+      "minValue": "Must be at least {min}",
+      "maxValue": "Must be at most {max}"
+    }
+  },
+  "claimForm": {
+    "title": "Report a claim",
+    "description": "Tell us what happened. The more detail you provide, the faster we can process your claim.",
+    "preview": {
+      "caption": "Data-driven preview · conditional fields by claim type"
+    },
+    "fields": {
+      "claim_type": {
+        "label": "Claim type",
+        "options": {
+          "health": "Health",
+          "vehicle": "Vehicle",
+          "property": "Property",
+          "liability": "Liability",
+          "other": "Other"
+        }
+      },
+      "policy_number": {
+        "label": "Policy number",
+        "placeholder": "e.g. POL-2026-00421"
+      },
+      "mutual_number": { "label": "Health insurance number" },
+      "plate_number": {
+        "label": "Vehicle registration",
+        "placeholder": "e.g. AB-123-CD"
+      },
+      "property_address": { "label": "Property address" },
+      "sec_details": { "label": "Incident details" },
+      "incident_date": { "label": "Incident date" },
+      "amount_claimed": { "label": "Claimed amount", "placeholder": "0" },
+      "currency": { "label": "Currency" },
+      "description": {
+        "label": "Description",
+        "placeholder": "Describe what happened…",
+        "help": "Up to 500 characters."
+      },
+      "document": {
+        "label": "Supporting document",
+        "help": "Photo or PDF, up to 10 MB."
+      }
+    }
+  },
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "pipeline": "Pipeline",
+      "pricing": "Pricing",
+      "signIn": "Sign in",
+      "getStarted": "Get started"
+    },
+    "hero": {
+      "badge": "Real-time · Automated · Audit-ready",
+      "title": "From claim to payout — in under 24 hours.",
+      "titleLead": "From claim to payout,",
+      "rotating": ["in under 24 hours", "fully automated", "end-to-end traceable", "audit-ready"],
+      "subtitle": "ClaimFlow automates your claims handling end to end. Fewer delays. Fewer errors. Happier customers.",
+      "ctaPrimary": "Start 14-day free trial",
+      "ctaSecondary": "Watch the demo →"
+    },
+    "stats": {
+      "claimsValue": "3,200",
+      "claims": "claims processed",
+      "satisfactionValue": "94%",
+      "satisfaction": "customer satisfaction",
+      "avgTimeValue": "18h",
+      "avgTime": "average processing time"
+    },
+    "problem": {
+      "title": "No more Excel-and-email firefighting",
+      "subtitle": "Slow for customers, opaque for regulators, costly for you. There's a better way.",
+      "faster": {
+        "title": "Delays",
+        "body": "5 to 21 days for a simple refund. Your customers deserve better."
+      },
+      "traceable": {
+        "title": "Traceability",
+        "body": "No regulator accepts an audit on sticky notes. ClaimFlow traces everything, automatically."
+      },
+      "automated": {
+        "title": "Payment",
+        "body": "Every approval triggers the payout. No manual step, nothing forgotten."
+      }
+    },
+    "how": {
+      "title": "One pipeline. Four steps. Zero friction.",
+      "subtitle": "From first notice to payout, every step runs itself.",
+      "declare": {
+        "title": "Declare",
+        "body": "The policyholder submits a claim with photos and documents through a smart, adaptive form."
+      },
+      "validate": {
+        "title": "Validate",
+        "body": "Business rules decide instantly: auto-approve below threshold, or route to an evaluator."
+      },
+      "approve": {
+        "title": "Decide",
+        "body": "The agent reviews the file and renders a decision, with the full context in one screen."
+      },
+      "reimburse": {
+        "title": "Pay",
+        "body": "Payout is triggered automatically and the customer is notified in real time."
+      }
+    },
+    "pipeline": {
+      "title": "See exactly where every claim stands",
+      "subtitle": "Each claim is routed, evaluated, paid and audited automatically — and tracked in real time, end to end."
+    },
+    "lob": {
+      "title": "Every claim, one pipeline",
+      "subtitle": "Health, auto, property, liability — ClaimFlow handles every line of business on a single, traceable workflow."
+    },
+    "pricing": {
+      "title": "Simple, transparent pricing",
+      "subtitle": "Start free for 14 days. No credit card required.",
+      "perMonth": "/mo",
+      "mostPopular": "Most popular",
+      "cta": "Start free",
+      "ctaEnterprise": "Contact sales",
+      "starter": {
+        "name": "Starter",
+        "price": "$299",
+        "tagline": "For small insurers & MGAs",
+        "features": [
+          "Up to 200 claims / month",
+          "5 agents",
+          "All workflows",
+          "Email notifications",
+          "Audit trail"
+        ]
+      },
+      "growth": {
+        "name": "Growth",
+        "price": "$899",
+        "tagline": "For mid-market insurers",
+        "features": [
+          "Up to 1,000 claims / month",
+          "25 agents",
+          "Unlimited workflows",
+          "Advanced analytics",
+          "API access",
+          "Priority support"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "tagline": "For large accounts",
+        "features": [
+          "Unlimited volume",
+          "Unlimited agents",
+          "Self-hosted XCore",
+          "Guaranteed SLA",
+          "Custom workflows"
+        ]
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        {
+          "q": "Is my data secure?",
+          "a": "Yes. Full isolation between tenants, AES-256 encryption, and an immutable audit trail. Your data is never shared."
+        },
+        {
+          "q": "How long does setup take?",
+          "a": "Minutes. Create your workspace, invite your agents, and start receiving claims the same day."
+        },
+        {
+          "q": "Can I import my existing claims?",
+          "a": "Yes, via CSV import or our API. Our team helps you onboard."
+        },
+        {
+          "q": "How are payouts handled?",
+          "a": "Refunds are triggered automatically through Stripe as soon as a claim is approved."
+        },
+        {
+          "q": "Is ClaimFlow compliant for regulators?",
+          "a": "Every action is logged in an append-only audit trail, designed for ACPR, FCA and BCEAO requirements."
+        },
+        {
+          "q": "What happens after the free trial?",
+          "a": "Pick the plan that fits. No commitment, cancel anytime."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to cut your processing time by 5×?",
+      "subtitle": "Spin up your insurer workspace in minutes.",
+      "button": "Get started — free for 14 days"
+    },
+    "footer": {
+      "tagline": "Intelligent claims management, powered by XCore.",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "features": "Features",
+      "pricing": "Pricing",
+      "demo": "Demo",
+      "about": "About",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "security": "Security",
+      "rights": "All rights reserved."
+    }
+  },
+  "dashboard": {
+    "claimant": {
+      "kpi": {
+        "total": "Total claims",
+        "inProgress": "In progress",
+        "reimbursed": "Reimbursed",
+        "received": "Total received"
+      },
+      "table": {
+        "id": "ID",
+        "type": "Type",
+        "date": "Date",
+        "amount": "Amount",
+        "status": "Status",
+        "action": "Action"
+      },
+      "view": "View",
+      "empty": {
+        "title": "No claims yet",
+        "body": "Submit your first claim to get started.",
+        "cta": "New claim"
+      }
+    }
+  },
+  "auth": {
+    "brandPitch": "From claim to payout, in one traceable pipeline.",
+    "point1": "Automated claims, end to end",
+    "point2": "Real-time tracking for every file",
+    "point3": "Regulator-ready audit trail",
+    "backHome": "Back to home",
+    "email": "Email",
+    "password": "Password",
+    "demoTitle": "Or explore the demo as",
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your ClaimFlow workspace.",
+      "forgot": "Forgot password?",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Start your 14-day free trial. No credit card required.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "company": "Company",
+      "workEmail": "Work email",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "terms": "By creating an account, you agree to our Terms and Privacy Policy."
+    },
+    "errors": {
+      "required": "This field is required",
+      "email": "Enter a valid email address",
+      "min": "At least {n} characters"
+    }
+  },
+  "claimDetail": {
+    "back": "Back to claims",
+    "submittedOn": "Submitted on",
+    "amounts": {
+      "claimed": "Claimed",
+      "approved": "Approved",
+      "reimbursed": "Reimbursed"
+    },
+    "info": {
+      "title": "Information",
+      "incidentDate": "Incident date",
+      "policy": "Policy number",
+      "description": "Description"
+    },
+    "timelineTitle": "Timeline",
+    "documentsTitle": "Documents",
+    "addDocument": "Add document",
+    "live": {
+      "on": "Real-time on",
+      "play": "Simulate live updates",
+      "running": "Live…",
+      "reset": "Reset"
+    },
+    "actor": { "system": "System", "you": "You" },
+    "toastUpdate": "Status updated",
+    "viewPayout": "View payout receipt",
+    "sampleDescription": "Front-right wing damaged in a parking-lot collision. Photos and police report attached."
+  },
+  "stepInfo": {
+    "hint": "Tap a step to see its details",
+    "submitted": "Claim received and recorded.",
+    "under_review": "Routed to the evaluation queue.",
+    "evaluation": "Reviewed by {agent}.",
+    "approved": "Approved for {amount}.",
+    "paid": "Payout sent to your registered account.",
+    "closed": "Claim archived."
+  },
+  "notifications": {
+    "empty": {
+      "title": "You're all caught up",
+      "body": "Notifications about your claims will appear here in real time."
+    }
+  },
+  "agent": {
+    "kpi": {
+      "processedToday": "Processed today",
+      "avgTime": "Avg. handling time",
+      "approvalRate": "Approval rate"
+    },
+    "tabs": {
+      "all": "All",
+      "toReview": "To review",
+      "inProgress": "In progress",
+      "done": "Done"
+    },
+    "queue": {
+      "title": "Queue",
+      "urgent": "Urgent",
+      "claimant": "Claimant",
+      "aboveThreshold": "Above auto-approve threshold",
+      "open": "Open",
+      "empty": {
+        "title": "Queue is clear",
+        "body": "New claims assigned to you will show up here in real time."
+      }
+    },
+    "evaluation": {
+      "title": "Evaluation",
+      "decision": "Decision",
+      "approve": "Approve",
+      "partial": "Partial",
+      "reject": "Reject",
+      "amountApproved": "Approved amount",
+      "reason": "Decision reason",
+      "reasonPlaceholder": "Explain your decision to the claimant…",
+      "notes": "Internal notes",
+      "notesPlaceholder": "Not visible to the claimant…",
+      "submit": "Submit decision",
+      "submitted": "Decision recorded"
+    }
+  },
+  "admin": {
+    "period": { "7d": "7 days", "30d": "30 days", "90d": "90 days" },
+    "kpi": {
+      "totalClaims": "Total claims",
+      "avgTime": "Avg. processing time",
+      "approvalRate": "Approval rate",
+      "totalReimbursed": "Reimbursed this month"
+    },
+    "charts": {
+      "volume": "Claim volume",
+      "distribution": "Status distribution",
+      "totalLabel": "claims"
+    },
+    "alerts": {
+      "overdue": "{count} claims overdue — no decision in over 72h",
+      "quota": "Monthly quota: {used}/{limit} claims used ({percent}%)",
+      "review": "Review",
+      "upgrade": "Upgrade"
+    },
+    "license": {
+      "title": "License & plan",
+      "plan": "Plan",
+      "trialLeft": "{days} days left in trial",
+      "activate": "Activate Growth"
+    },
+    "recent": {
+      "title": "Recent claims",
+      "client": "Client",
+      "agent": "Agent",
+      "unassigned": "Unassigned"
+    }
+  },
+  "onboarding": {
+    "step": "Step",
+    "steps": {
+      "company": "Company",
+      "plan": "Plan",
+      "success": "Ready"
+    },
+    "continue": "Continue",
+    "back": "Back",
+    "errors": {
+      "required": "This field is required"
+    },
+    "company": {
+      "title": "Company information",
+      "subtitle": "Tell us about your insurance company to configure your workspace.",
+      "name": "Company name",
+      "email": "Company email",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "sector": "Insurance sector",
+      "sectorPlaceholder": "Select sector",
+      "agents": "Estimated number of agents"
+    },
+    "branding": {
+      "title": "Your brand",
+      "subtitle": "Customize your company's look and feel. Your policyholders will see this on their claim forms.",
+      "primaryColor": "Primary color",
+      "secondaryColor": "Secondary color",
+      "logo": "Company logo",
+      "uploadLogo": "Upload logo",
+      "preview": "Preview"
+    },
+    "plan": {
+      "title": "Choose your plan",
+      "subtitle": "Start with a 14-day free trial. No commitment — cancel anytime.",
+      "popular": "Most popular",
+      "startTrial": "Start 14-day free trial",
+      "description": {
+        "starter": "Small teams getting started with claims automation.",
+        "growth": "Growing teams that need advanced workflows and API access.",
+        "enterprise": "Large operations requiring dedicated support and unlimited volume."
+      },
+      "features": {
+        "claims100": "Up to 100 claims/month",
+        "claims1000": "Up to 1,000 claims/month",
+        "agents2": "Up to 2 agents",
+        "agents10": "Up to 10 agents",
+        "brandedForm": "Branded claim form",
+        "emailSupport": "Email support",
+        "workflowConfig": "Workflow configuration",
+        "apiAccess": "API access",
+        "prioritySupport": "Priority support",
+        "unlimitedClaims": "Unlimited claims",
+        "unlimitedAgents": "Unlimited agents",
+        "customWorkflows": "Custom workflows",
+        "dedicatedSupport": "Dedicated support",
+        "whiteLabel": "White-label",
+        "sla": "Guaranteed SLA"
+      }
+    },
+    "success": {
+      "title": "Your workspace is ready!",
+      "subtitle": "Your company has been created. Here's a quick summary before you dive in.",
+      "tenantCreated": "Workspace created successfully",
+      "plan": "Plan",
+      "trial": "Trial ends",
+      "slug": "Your workspace URL",
+      "guideTitle": "Getting started guide",
+      "guide1": "Invite your agents from the Agents page",
+      "guide2": "Generate public form links to share with policyholders",
+      "guide3": "Configure your auto-approval threshold in Settings",
+      "guide4": "Customize your brand colors and logo",
+      "guide5": "Review the audit trail for compliance readiness",
+      "goToDashboard": "Go to dashboard"
+    }
+  },
+  "payment": {
+    "title": "Reimbursement on its way",
+    "subtitle": "Your reimbursement of {amount} has been issued. Funds typically arrive within 2–3 business days.",
+    "reference": "Payment reference",
+    "claim": "Claim",
+    "method": "Method",
+    "amount": "Amount",
+    "viewClaim": "View claim",
+    "backToClaims": "Back to my claims",
+    "securedBy": "Secured by Stripe"
+  },
+  "adminPages": {
+    "claims": { "title": "All claims" },
+    "workflow": {
+      "title": "Workflow",
+      "subtitle": "Your configured claims automation. Every claim flows through these stages — auto-approved below the threshold, or routed to an agent."
+    },
+    "agents": {
+      "title": "Agents",
+      "invite": "Invite agent",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "handled": "Handled",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "audit": {
+      "title": "Audit trail",
+      "subtitle": "Immutable, append-only record of every action — built for regulators.",
+      "actor": "Actor",
+      "action": "Action",
+      "target": "Target",
+      "when": "When"
+    },
+    "settings": {
+      "title": "Settings",
+      "tabs": {
+        "branding": "Branding",
+        "publicLinks": "Public links",
+        "workflow": "Workflow"
+      },
+      "branding": {
+        "companyName": "Company name",
+        "logo": "Logo",
+        "upload": "Upload logo",
+        "primaryColor": "Primary color",
+        "secondaryColor": "Secondary color",
+        "preview": "Preview",
+        "previewSub": "Your brand preview",
+        "save": "Save branding",
+        "saved": "Branding updated",
+        "reset": "Reset to defaults"
+      },
+      "publicLinks": {
+        "description": "Share these links with your policyholders to submit claims directly.",
+        "new": "New link",
+        "createTitle": "Create a public form link",
+        "createDescription": "Each link generates a branded claim form you can share via email, WhatsApp, or embed on your website.",
+        "formTitle": "Form title",
+        "formSlug": "URL slug",
+        "create": "Create link",
+        "cancel": "Cancel",
+        "created": "Link created",
+        "deleted": "Link deleted",
+        "copied": "Link copied!",
+        "copy": "Copy link",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "delete": "Delete",
+        "empty": "No public links yet. Create your first one to start receiving claims online.",
+        "errors": {
+          "required": "Title and slug are required",
+          "duplicate": "A link with this slug already exists"
+        }
+      },
+      "workflow": {
+        "routing": "Routing strategy",
+        "roundRobin": "Round-robin",
+        "loadBalanced": "Load-balanced",
+        "manual": "Manual assignment",
+        "routingHelp": "How claims above the threshold are assigned to agents.",
+        "autoReject": "Auto-reject after",
+        "days": "days without decision",
+        "autoRejectHelp": "Claims that haven't been decided within this period are automatically rejected.",
+        "save": "Save workflow",
+        "saved": "Workflow settings saved",
+        "reset": "Reset to defaults"
+      },
+      "autoApprove": "Auto-approval threshold",
+      "autoApproveHelp": "Claims at or below this amount are approved automatically; the rest are routed to an agent.",
+      "save": "Save settings",
+      "saved": "Settings saved"
+    },
+    "license": {
+      "title": "License & plan",
+      "current": "Current plan",
+      "trial": "Trial — {days} days left",
+      "usage": "This month's usage",
+      "claimsUsage": "Claims",
+      "agentsUsage": "Agents",
+      "upgrade": "Upgrade to Growth"
+    }
+  }
+}
