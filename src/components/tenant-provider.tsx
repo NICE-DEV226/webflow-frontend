@@ -2,21 +2,21 @@
 
 import { createContext, useContext } from "react";
 
-import { type Tenant } from "@/lib/tenant";
+import { type TenantResponse } from "@/lib/tenant";
 
-const FALLBACK: Tenant = { slug: "demo", name: "Demo Insurance", color: "#1E3A5F" };
+const FALLBACK: TenantResponse & { color: string } = { id: "", slug: "demo", name: "Demo Insurance", color: "#1E3A5F", created_at: "" };
 
-const TenantContext = createContext<Tenant>(FALLBACK);
+const TenantContext = createContext<TenantResponse & { color: string }>(FALLBACK);
 
 export function TenantProvider({
   tenant,
   children,
 }: {
-  tenant: Tenant;
+  tenant: TenantResponse;
   children: React.ReactNode;
 }) {
   return (
-    <TenantContext.Provider value={tenant}>{children}</TenantContext.Provider>
+    <TenantContext.Provider value={{ ...tenant, color: "#1E3A5F" }}>{children}</TenantContext.Provider>
   );
 }
 

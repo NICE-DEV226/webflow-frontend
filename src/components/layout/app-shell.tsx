@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, Menu } from "lucide-react";
 
 import { AppSidebar, type SidebarUser } from "@/components/layout/app-sidebar";
@@ -14,6 +14,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { getNotifications } from "@/lib/api/notifications";
+import { getToken } from "@/lib/api/client";
 import type { Role } from "@/lib/nav";
 
 const NOTIF_HREF: Record<Role, string> = {
@@ -28,7 +30,7 @@ export function AppShell({
   user,
   title,
   actions,
-  unread = 0,
+  unread: _unread,
   children,
 }: {
   role: Role;
@@ -39,6 +41,14 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    if (!getToken()) return;
+    getNotifications()
+      .then((ns) => setUnread(ns.filter((n) => !n.is_read).length))
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="min-h-screen bg-background lg:pl-60">

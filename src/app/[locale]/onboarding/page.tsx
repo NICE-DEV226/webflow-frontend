@@ -1,37 +1,102 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Building2, CreditCard, PartyPopper, Rocket } from "lucide-react";
+import { Building2, CreditCard, PartyPopper } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
-import { CompanyStep } from "@/components/onboarding/company-step";
+import { CompanyStep, type CompanyFormData } from "@/components/onboarding/company-step";
 import { PlanStep } from "@/components/onboarding/plan-step";
-import { SuccessStep } from "@/components/onboarding/success-step";
-import { Progress, ProgressIndicator } from "@/components/ui/progress";
+import { ReviewStep } from "@/components/onboarding/review-step";
 import { cn } from "@/lib/utils";
 
-type Step = "company" | "plan" | "success";
+type Step = "company" | "plan" | "review";
 
 const STEPS: { key: Step; icon: typeof Building2 }[] = [
   { key: "company", icon: Building2 },
   { key: "plan", icon: CreditCard },
-  { key: "success", icon: PartyPopper },
+  { key: "review", icon: PartyPopper },
 ];
 
 const STEP_LABELS: Record<Step, string> = {
   company: "onboarding.steps.company",
   plan: "onboarding.steps.plan",
-  success: "onboarding.steps.success",
+  review: "onboarding.steps.review",
 };
+
+const STORAGE_KEY = "claimflow_onboarding";
+
+function saveState(step: Step, tenantId: string | null, companyData: CompanyFormData | null, selectedPlan: string | null) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ step, tenantId, companyData, selectedPlan }));
+}
+
+function loadState(): { step: Step; tenantId: string | null; companyData: CompanyFormData | null; selectedPlan: string | null } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function clearState() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(STORAGE_KEY);
+}
 
 export default function OnboardingPage() {
   const t = useTranslations();
+  const [loaded, setLoaded] = useState(false);
   const [step, setStep] = useState<Step>("company");
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [tenantId, setTenantId] = useState<string | null>(null);
+  const [companyData, setCompanyData] = useState<CompanyFormData | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved = loadState();
+    if (saved && saved.tenantId) {
+      setStep(saved.step);
+      setTenantId(saved.tenantId);
+      if (saved.companyData) setCompanyData(saved.companyData);
+      if (saved.selectedPlan) setSelectedPlan(saved.selectedPlan);
+    }
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (loaded) {
+      saveState(step, tenantId, companyData, selectedPlan);
+    }
+  }, [step, tenantId, companyData, selectedPlan, loaded]);
 
   const currentIdx = STEPS.findIndex((s) => s.key === step);
   const progress = ((currentIdx + 1) / STEPS.length) * 100;
+
+  function handleCompanyNext(data: { tenantId: string; company: CompanyFormData }) {
+    setTenantId(data.tenantId);
+    setCompanyData(data.company);
+    setStep("plan");
+  }
+
+  function handlePlanNext(plan: string) {
+    setSelectedPlan(plan);
+    setStep("review");
+  }
+
+  function handleGoToDashboard() {
+    clearState();
+  }
+
+  if (!loaded) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="size-8 animate-spin rounded-full border-4 border-muted border-t-emerald" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,7 +144,7 @@ export default function OnboardingPage() {
                     isActive ? "text-emerald" : "text-muted-foreground",
                   )}
                 >
-                  {t(s.key === step ? STEP_LABELS[s.key] : STEP_LABELS[s.key])}
+                  {t(STEP_LABELS[s.key])}
                 </span>
               </div>
               {i < STEPS.length - 1 && (
@@ -98,21 +163,25 @@ export default function OnboardingPage() {
       {/* Content */}
       <main className="mx-auto mt-8 max-w-3xl px-6 pb-16">
         {step === "company" && (
-          <CompanyStep
-            onNext={(id) => {
-              setSessionId(id);
-              setStep("plan");
-            }}
-          />
+          <CompanyStep onNext={handleCompanyNext} />
         )}
-        {step === "plan" && sessionId && (
+        {step === "plan" && tenantId && (
           <PlanStep
-            sessionId={sessionId}
-            onNext={() => setStep("success")}
+            sessionId={tenantId}
+            selectedPlan={selectedPlan}
+            onNext={handlePlanNext}
             onBack={() => setStep("company")}
           />
         )}
-        {step === "success" && sessionId && <SuccessStep sessionId={sessionId} />}
+        {step === "review" && tenantId && companyData && (
+          <ReviewStep
+            tenantId={tenantId}
+            company={companyData}
+            plan={selectedPlan}
+            onChangePlan={() => setStep("plan")}
+            onGoToDashboard={handleGoToDashboard}
+          />
+        )}
       </main>
     </div>
   );

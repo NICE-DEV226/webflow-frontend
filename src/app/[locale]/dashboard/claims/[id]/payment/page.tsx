@@ -7,6 +7,8 @@ import { AppShell } from "@/components/layout/app-shell";
 import { Lottie } from "@/components/lottie/lottie";
 import { getClaimDetail } from "@/lib/api/claims";
 import { getMe } from "@/lib/api/auth";
+import { getServerToken } from "@/lib/api/with-server-auth";
+import { redirect } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export default async function PaymentPage({
@@ -18,13 +20,15 @@ export default async function PaymentPage({
   setRequestLocale(locale);
 
   const t = await getTranslations("payment");
-  const user = await getMe();
-  const claim = await getClaimDetail(id);
+  const token = await getServerToken();
+  if (!token) redirect(`/${locale}/login`);
+  const user = await getMe(token);
+  const claim = await getClaimDetail(id, token);
   const money = new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: claim.currency,
+    currency: "USD",
     maximumFractionDigits: 0,
-  }).format(claim.amount);
+  }).format(claim.amount_claimed);
 
   const rows = [
     { label: t("amount"), value: money, mono: true },
@@ -34,7 +38,7 @@ export default async function PaymentPage({
   ];
 
   return (
-    <AppShell role="claimant" user={{ name: `${user.firstName} ${user.lastName}`, email: user.email }} title={t("title")}>
+    <AppShell role="claimant" user={{ name: user.email, email: user.email }} title={t("title")}>
       <div className="mx-auto max-w-md">
         <div className="rounded-2xl border bg-card p-8 text-center shadow-sm">
           <Lottie

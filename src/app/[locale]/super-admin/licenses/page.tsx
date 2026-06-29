@@ -5,67 +5,54 @@ import { useTranslations } from "next-intl";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { useAuth } from "@/components/auth-provider";
-import { getPlatformLicenses, type PlatformLicense } from "@/lib/api/platform";
+import { getPlatformLicenses, type LicensePlan } from "@/lib/api/platform";
 
 export default function SuperAdminLicensesPage() {
   const t = useTranslations("superAdminPages.licenses");
   const tNav = useTranslations("nav.superadmin");
   const { user } = useAuth();
 
-  const [licenses, setLicenses] = useState<PlatformLicense[]>([]);
+  const [plans, setPlans] = useState<LicensePlan[]>([]);
 
   useEffect(() => {
-    getPlatformLicenses().then(setLicenses).catch(() => {});
+    getPlatformLicenses().then(setPlans).catch(() => {});
   }, []);
 
   return (
     <AppShell
       role="superadmin"
-      user={{ name: `${user?.firstName} ${user?.lastName}`, email: user?.email ?? "" }}
+      user={{ name: user?.email ?? "", email: user?.email ?? "" }}
       title={tNav("licenses")}
     >
       <p className="mb-6 text-sm text-muted-foreground">{t("subtitle")}</p>
 
-      <div className="overflow-hidden rounded-xl border">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 text-left">
-            <tr>
-              <th className="px-4 py-3 font-medium text-muted-foreground">{t("tenant")}</th>
-              <th className="px-4 py-3 font-medium text-muted-foreground">{t("plan")}</th>
-              <th className="px-4 py-3 font-medium text-muted-foreground">{t("status")}</th>
-              <th className="px-4 py-3 font-medium text-muted-foreground">{t("trialEnds")}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {licenses.map((lic) => (
-              <tr key={lic.tenantSlug} className="hover:bg-muted/30">
-                <td className="px-4 py-3 font-medium">{lic.tenantName}</td>
-                <td className="px-4 py-3 capitalize">{lic.plan}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      lic.status === "active"
-                        ? "bg-emerald/10 text-emerald"
-                        : lic.status === "trial"
-                          ? "bg-amber/10 text-amber"
-                          : "bg-destructive/10 text-destructive"
-                    }`}
-                  >
-                    {lic.status === "active"
-                      ? t("active")
-                      : lic.status === "trial"
-                        ? t("trial")
-                        : t("expired")}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {new Date(lic.trialEndsAt).toLocaleDateString()}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {plans.length === 0 ? (
+        <div className="flex items-center justify-center rounded-xl border py-20 text-sm text-muted-foreground">
+          {t("empty")}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {plans.map((plan) => (
+            <div key={plan.id} className="rounded-xl border bg-card p-5 shadow-sm">
+              <h3 className="text-lg font-bold text-primary">{plan.name}</h3>
+              <p className="mt-1 text-2xl font-bold">
+                {plan.price.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/mois</span>
+              </p>
+              {plan.description && (
+                <p className="mt-2 text-xs text-muted-foreground">{plan.description}</p>
+              )}
+              <div className="mt-4 space-y-1 text-sm">
+                <p className="text-muted-foreground">
+                  {t("maxUsers")}: <span className="font-medium text-primary">{plan.max_users}</span>
+                </p>
+                <p className="text-muted-foreground">
+                  {t("type")}: <span className="font-medium capitalize">{plan.type.toLowerCase()}</span>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </AppShell>
   );
 }

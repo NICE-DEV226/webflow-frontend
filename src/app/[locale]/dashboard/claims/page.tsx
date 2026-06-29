@@ -12,9 +12,13 @@ import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
 import { StatusBadge } from "@/components/claim/status-badge";
-import { CLAIM_TYPE } from "@/lib/claim-type";
+import { CLAIM_TYPE, type ClaimType } from "@/lib/claim-type";
 import { getMyClaims } from "@/lib/api/claims";
 import { getMe } from "@/lib/api/auth";
+import { getServerToken } from "@/lib/api/with-server-auth";
+import { getPlatformMetrics } from "@/lib/api/platform";
+import { getTenants } from "@/lib/api/tenants";
+import { redirect } from "next/navigation";
 import type { ClaimStatus } from "@/lib/claim-status";
 
 const IN_PROGRESS: ClaimStatus[] = ["submitted", "under_review", "evaluation", "approved"];
@@ -32,16 +36,27 @@ export default async function ClaimantClaimsPage({
   const tType = await getTranslations("claimForm.fields.claim_type.options");
   const tActions = await getTranslations("actions");
 
-  const claims = await getMyClaims();
-  const user = await getMe();
+  const token = await getServerToken();
+  if (!token) redirect(`/${locale}/login`);
+
+  // Redirect admins/agents/superadmins to their correct dashboard
+  const isSuper = await getPlatformMetrics(token).then(() => true).catch(() => false);
+  if (isSuper) redirect(`/${locale}/super-admin/dashboard`);
+  const userTenants = await getTenants(token);
+  const isOwner = userTenants.some((t) => t.is_owner);
+  if (isOwner) redirect(`/${locale}/admin/dashboard`);
+  if (userTenants.length > 0) redirect(`/${locale}/agent/queue`);
+
+  const claims = await getMyClaims(token);
+  const user = await getMe(token);
 
   const kpis = {
     total: claims.length,
-    inProgress: claims.filter((c) => IN_PROGRESS.includes(c.status)).length,
+    inProgress: claims.filter((c) => IN_PROGRESS.includes(c.status as ClaimStatus)).length,
     reimbursed: claims.filter((c) => c.status === "paid").length,
     received: claims
       .filter((c) => c.status === "paid")
-      .reduce((sum, c) => sum + c.amount, 0),
+      .reduce((sum, c) => sum + c.amount_claimed, 0),
   };
   const money = (n: number) =>
     new Intl.NumberFormat(locale, {
@@ -66,7 +81,7 @@ export default async function ClaimantClaimsPage({
   return (
     <AppShell
       role="claimant"
-      user={{ name: `${user.firstName} ${user.lastName}`, email: user.email }}
+      user={{ name: user.email, email: user.email }}
       title={tNav("claims")}
       unread={2}
       actions={
@@ -111,7 +126,7 @@ export default async function ClaimantClaimsPage({
             </thead>
             <tbody>
               {claims.map((c, i) => {
-                const type = CLAIM_TYPE[c.type];
+                const type = CLAIM_TYPE[c.type as ClaimType];
                 const TypeIcon = type.icon;
                 return (
                   <tr
@@ -130,10 +145,10 @@ export default async function ClaimantClaimsPage({
                         {tType(c.type)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{date(c.date)}</td>
-                    <td className="px-4 py-3 text-right font-medium">{money(c.amount)}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{date(c.created_at)}</td>
+                    <td className="px-4 py-3 text-right font-medium">{money(c.amount_claimed)}</td>
                     <td className="px-4 py-3">
-                      <StatusBadge status={c.status} />
+                      <StatusBadge status={c.status as ClaimStatus} />
                     </td>
                     <td className="px-4 py-3 text-right">
                       <Link

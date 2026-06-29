@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/components/auth-provider";
-import { updateTenantBranding, updateTenantInfo, getTenant } from "@/lib/api/tenants";
+import { getTenant, updateTenant, updateTenantSettings, getTenantSettings } from "@/lib/api/tenants";
 
 const DEFAULTS = {
   name: "",
@@ -19,8 +19,8 @@ const DEFAULTS = {
 
 export function BrandingTab() {
   const t = useTranslations("adminPages.settings");
-  const { user } = useAuth();
-  const tenantSlug = user?.tenantSlug ?? "";
+  const { user, tenantId: authTenantId } = useAuth();
+  const tenantId = authTenantId ?? "";
 
   const [name, setName] = useState(DEFAULTS.name);
   const [primaryColor, setPrimaryColor] = useState(DEFAULTS.primaryColor);
@@ -29,14 +29,17 @@ export function BrandingTab() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!tenantSlug) return;
-    getTenant(tenantSlug).then((tenant) => {
+    if (!tenantId) return;
+    Promise.all([
+      getTenant(tenantId),
+      getTenantSettings(tenantId),
+    ]).then(([tenant, settings]) => {
       setName(tenant.name);
-      setPrimaryColor(tenant.branding.primaryColor);
-      setSecondaryColor(tenant.branding.secondaryColor);
-      setLogoPreview(tenant.branding.logoUrl);
+      setPrimaryColor((settings.primaryColor as string) ?? DEFAULTS.primaryColor);
+      setSecondaryColor((settings.secondaryColor as string) ?? DEFAULTS.secondaryColor);
+      setLogoPreview((settings.logoUrl as string) ?? null);
     }).catch(() => {});
-  }, [tenantSlug]);
+  }, [tenantId]);
 
   function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -50,8 +53,8 @@ export function BrandingTab() {
     setSaving(true);
     try {
       await Promise.all([
-        updateTenantInfo(tenantSlug, { name }),
-        updateTenantBranding(tenantSlug, {
+        updateTenant(tenantId, { name }),
+        updateTenantSettings(tenantId, {
           primaryColor,
           secondaryColor,
           logoUrl: logoPreview,

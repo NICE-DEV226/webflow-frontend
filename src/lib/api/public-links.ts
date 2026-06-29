@@ -1,39 +1,64 @@
 import { api } from "./client";
 
-export interface PublicFormLink {
-  id: string;
-  slug: string;
+export interface FormField {
+  [key: string]: unknown;
+}
+
+export interface CreateFormBody {
   title: string;
-  active: boolean;
-  createdAt: string;
+  description?: string | null;
+  fields: FormField[];
+  steps?: FormField[];
+  settings?: Record<string, unknown>;
+  theme?: Record<string, unknown>;
+  tags?: string[];
 }
 
-export async function getPublicLinks(tenantSlug: string): Promise<PublicFormLink[]> {
-  return api.get<PublicFormLink[]>(`/tenants/${tenantSlug}/public-links`);
+export interface FormResponse {
+  id?: string;
+  title?: string;
+  description?: string | null;
+  fields?: FormField[];
+  steps?: FormField[];
+  settings?: Record<string, unknown>;
+  theme?: Record<string, unknown>;
+  tags?: string[];
+  created_at?: string;
+  updated_at?: string;
 }
 
-export async function getPublicLink(slug: string): Promise<PublicFormLink> {
-  return api.get<PublicFormLink>(`/public-links/${slug}`);
+export async function getForms(): Promise<FormResponse[]> {
+  return api.get<FormResponse[]>("/xform/forms");
 }
 
-export async function createPublicLink(
-  tenantSlug: string,
-  data: { slug: string; title: string },
-): Promise<PublicFormLink> {
-  return api.post<PublicFormLink>(`/tenants/${tenantSlug}/public-links`, data);
+export async function getForm(id: string): Promise<FormResponse> {
+  return api.get<FormResponse>(`/xform/forms/${id}`);
 }
 
-export async function togglePublicLink(id: string): Promise<PublicFormLink> {
-  return api.patch<PublicFormLink>(`/public-links/${id}/toggle`);
+export async function createForm(data: CreateFormBody): Promise<FormResponse> {
+  return api.post<FormResponse>("/xform/forms", data);
 }
 
-export async function updatePublicLink(
-  id: string,
-  data: { slug?: string; title?: string },
-): Promise<PublicFormLink> {
-  return api.put<PublicFormLink>(`/public-links/${id}`, data);
+export async function updateForm(id: string, data: Partial<CreateFormBody>): Promise<FormResponse> {
+  return api.put<FormResponse>(`/xform/forms/${id}`, data);
 }
 
-export async function deletePublicLink(id: string): Promise<void> {
-  return api.delete(`/public-links/${id}`);
+export async function deleteForm(id: string): Promise<void> {
+  return api.delete(`/xform/forms/${id}`);
+}
+
+export async function getFormSubmissions(id: string): Promise<Record<string, unknown>[]> {
+  return api.get<Record<string, unknown>[]>(`/xform/forms/${id}/submissions`);
+}
+
+export async function getFormAnalytics(id: string): Promise<Record<string, unknown>> {
+  return api.get<Record<string, unknown>>(`/xform/forms/${id}/analytics`);
+}
+
+export async function getPublicForm(slug: string): Promise<FormResponse> {
+  return api.get<FormResponse>(`/xform/public/${slug}`);
+}
+
+export async function submitPublicForm(slug: string, data: Record<string, unknown>): Promise<void> {
+  return api.post(`/xform/public/${slug}/submit`, { data });
 }

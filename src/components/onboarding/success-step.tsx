@@ -6,7 +6,15 @@ import { useRouter } from "@/i18n/navigation";
 import { CheckCircle, ArrowRight, PartyPopper } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { completeOnboarding, type ExtendedTenant } from "@/lib/api/tenants";
+import { getTenant } from "@/lib/api/tenants";
+
+interface ExtendedTenant {
+  id: string;
+  name: string;
+  slug: string;
+  plan: string;
+  trialEndsAt: string;
+}
 
 export function SuccessStep({ sessionId }: { sessionId: string }) {
   const t = useTranslations("onboarding");
@@ -14,7 +22,9 @@ export function SuccessStep({ sessionId }: { sessionId: string }) {
   const [tenant, setTenant] = useState<ExtendedTenant | null>(null);
 
   useEffect(() => {
-    completeOnboarding(sessionId).then(setTenant).catch(() => {});
+    getTenant(sessionId).then((data) => {
+      setTenant(data as unknown as ExtendedTenant);
+    }).catch(() => {});
   }, [sessionId]);
 
   function goToDashboard() {

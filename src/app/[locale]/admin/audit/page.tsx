@@ -10,18 +10,18 @@ import { useAuth } from "@/components/auth-provider";
 
 export default function AdminAuditPage() {
   const t = useTranslations("adminPages.audit");
-  const { user } = useAuth();
+  const { user, tenantId } = useAuth();
 
   const [events, setEvents] = useState<AuditEvent[]>([]);
 
   useEffect(() => {
-    if (user?.tenantSlug) {
-      getAuditTrail(user.tenantSlug).then(setEvents);
+    if (tenantId) {
+      getAuditTrail(tenantId).then(setEvents);
     }
-  }, [user?.tenantSlug]);
+  }, [tenantId]);
 
   const sidebarUser = user
-    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    ? { name: user.email, email: user.email }
     : { name: "", email: "" };
 
   return (

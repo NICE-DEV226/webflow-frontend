@@ -4,9 +4,11 @@ import { ChevronRight, Clock, CheckCircle, Inbox } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
-import { CLAIM_TYPE } from "@/lib/claim-type";
+import { CLAIM_TYPE, type ClaimType } from "@/lib/claim-type";
 import { getAgentQueue } from "@/lib/api/claims";
 import { getMe } from "@/lib/api/auth";
+import { getServerToken } from "@/lib/api/with-server-auth";
+import { redirect } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export default async function AgentQueuePage({
@@ -21,8 +23,10 @@ export default async function AgentQueuePage({
   const tNav = await getTranslations("nav.agent");
   const tType = await getTranslations("claimForm.fields.claim_type.options");
 
-  const user = await getMe();
-  const queue = await getAgentQueue();
+  const token = await getServerToken();
+  if (!token) redirect(`/${locale}/login`);
+  const user = await getMe(token);
+  const queue = await getAgentQueue(token);
 
   const money = (n: number) =>
     new Intl.NumberFormat(locale, {
@@ -45,7 +49,7 @@ export default async function AgentQueuePage({
   ];
 
   return (
-    <AppShell role="agent" user={{ name: user.firstName + " " + user.lastName, email: user.email }} title={tNav("queue")} unread={queue.length}>
+    <AppShell role="agent" user={{ name: user.email, email: user.email }} title={tNav("queue")} unread={queue.length}>
       {/* KPIs */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {kpis.map((k) => {
@@ -90,7 +94,7 @@ export default async function AgentQueuePage({
       {/* Queue */}
       <div className="mt-4 space-y-3">
         {queue.map((c) => {
-          const type = CLAIM_TYPE[c.type];
+          const type = CLAIM_TYPE[c.type as ClaimType];
           const TypeIcon = type.icon;
           return (
             <div
@@ -106,7 +110,7 @@ export default async function AgentQueuePage({
 
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  {c.urgent && (
+                  {c.status === "urgent" && (
                     <span className="inline-flex items-center rounded-full bg-destructive/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-destructive uppercase">
                       {t("queue.urgent")}
                     </span>
@@ -117,15 +121,15 @@ export default async function AgentQueuePage({
                   </span>
                 </div>
                 <p className="mt-0.5 text-sm text-muted-foreground">
-                  {c.claimant} · {c.receivedAgo}
-                  {c.urgent && (
+                  {c.id} · {c.submitted_at ?? c.created_at}
+                  {c.status === "urgent" && (
                     <span className="text-destructive"> · {t("queue.aboveThreshold")}</span>
                   )}
                 </p>
               </div>
 
               <span className="font-mono text-base font-bold text-primary tabular-nums">
-                {money(c.amount)}
+                {money(c.amount_claimed)}
               </span>
 
               <Link

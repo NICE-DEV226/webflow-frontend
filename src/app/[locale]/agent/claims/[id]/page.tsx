@@ -4,9 +4,11 @@ import { ArrowLeft, FileText, Image as ImageIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { AgentEvaluationForm } from "@/components/agent/agent-evaluation-form";
-import { CLAIM_TYPE } from "@/lib/claim-type";
+import { CLAIM_TYPE, type ClaimType } from "@/lib/claim-type";
 import { getClaimDetail, getAgentQueue } from "@/lib/api/claims";
 import { getMe } from "@/lib/api/auth";
+import { getServerToken } from "@/lib/api/with-server-auth";
+import { redirect } from "next/navigation";
 
 export default async function AgentClaimPage({
   params,
@@ -20,27 +22,29 @@ export default async function AgentClaimPage({
   const tAgent = await getTranslations("agent");
   const tType = await getTranslations("claimForm.fields.claim_type.options");
 
-  const user = await getMe();
-  const claim = await getClaimDetail(id);
-  const queue = await getAgentQueue();
-  const claimant = queue.find((c) => c.id === id)?.claimant ?? claim.clientName ?? "—";
-  const type = CLAIM_TYPE[claim.type];
+  const token = await getServerToken();
+  if (!token) redirect(`/${locale}/login`);
+  const user = await getMe(token);
+  const claim = await getClaimDetail(id, token);
+  const queue = await getAgentQueue(token);
+  const claimant = "—";
+  const type = CLAIM_TYPE[claim.type as ClaimType];
   const TypeIcon = type.icon;
 
   const money = (n: number) =>
     new Intl.NumberFormat(locale, {
       style: "currency",
-      currency: claim.currency,
+      currency: "USD",
       maximumFractionDigits: 0,
     }).format(n);
   const fmtDate = new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "long",
     year: "numeric",
-  }).format(new Date(claim.date));
+  }).format(new Date(claim.incident_date));
 
   return (
-    <AppShell role="agent" user={{ name: user.firstName + " " + user.lastName, email: user.email }} title={claim.id} unread={queue.length}>
+    <AppShell role="agent" user={{ name: user.email, email: user.email }} title={claim.id} unread={queue.length}>
       <Link
         href="/agent/queue"
         className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -68,7 +72,7 @@ export default async function AgentClaimPage({
                 </p>
               </div>
               <span className="ml-auto font-mono text-lg font-bold text-primary tabular-nums">
-                {money(claim.amount)}
+                {money(claim.amount_claimed)}
               </span>
             </div>
           </div>
@@ -85,44 +89,26 @@ export default async function AgentClaimPage({
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">{t("info.policy")}</dt>
                 <dd className="text-right font-mono text-xs text-foreground">
-                  {claim.policyNumber}
+                  {claim.id}
                 </dd>
               </div>
               <div>
                 <dt className="text-muted-foreground">{t("info.description")}</dt>
-                <dd className="mt-1 text-foreground">{t("sampleDescription")}</dd>
+                <dd className="mt-1 text-foreground">{claim.title}</dd>
               </div>
             </dl>
           </div>
 
           <div className="rounded-xl border bg-card p-5 shadow-sm">
             <h2 className="mb-4 text-sm font-semibold text-foreground">
-              {t("documentsTitle")} ({claim.documents.length})
+              {t("documentsTitle")} (0)
             </h2>
-            <div className="grid grid-cols-3 gap-3">
-              {claim.documents.map((doc) => {
-                const Icon = doc.kind === "pdf" ? FileText : ImageIcon;
-                return (
-                  <div
-                    key={doc.name}
-                    className="rounded-lg border bg-background p-3 transition-colors hover:border-ring"
-                  >
-                    <span className="flex size-9 items-center justify-center rounded-md bg-accent text-primary">
-                      <Icon className="size-5" />
-                    </span>
-                    <p className="mt-2 truncate text-xs font-medium text-foreground">
-                      {doc.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{doc.size}</p>
-                  </div>
-                );
-              })}
-            </div>
+            <p className="text-sm text-muted-foreground">{t("sampleDescription")}</p>
           </div>
         </div>
 
         {/* Right — evaluation form */}
-        <AgentEvaluationForm claimedAmount={claim.amount} currency={claim.currency} />
+        <AgentEvaluationForm claimedAmount={claim.amount_claimed} currency="USD" />
       </div>
     </AppShell>
   );

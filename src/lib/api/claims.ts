@@ -1,84 +1,103 @@
 import { api } from "./client";
-import type { ClaimStatus } from "@/lib/claim-status";
-import type { ClaimType } from "@/lib/claim-type";
 
-export interface Claim {
+export type ClaimType = "health" | "vehicle" | "property" | "liability" | "other";
+
+export interface ClaimListItem {
   id: string;
+  type: string;
+  status: string;
+  title: string;
+  amount_claimed: number;
+  amount_approved?: number | null;
+  incident_date: string;
+  submitted_at?: string | null;
+  decided_at?: string | null;
+  agent_id?: string | null;
+  created_at: string;
+}
+
+export interface ClaimCreate {
   type: ClaimType;
-  date: string;
-  amount: number;
-  currency: string;
-  status: ClaimStatus;
-}
-
-export interface ClaimDetail extends Claim {
-  policyNumber: string;
-  clientName?: string;
-  agentName?: string | null;
-  amountApproved?: number;
-  documents: { name: string; size: string; kind: "photo" | "pdf" }[];
-}
-
-export interface AgentQueueItem {
-  id: string;
-  type: ClaimType;
-  amount: number;
-  currency: string;
-  claimant: string;
-  receivedAgo: string;
-  urgent: boolean;
-}
-
-export interface StatusDistribution {
-  status: ClaimStatus;
-  value: number;
-}
-
-export interface VolumeDataPoint {
-  date: string;
-  count: number;
-}
-
-export interface RecentClaim {
-  id: string;
-  type: ClaimType;
-  client: string;
-  agent: string | null;
-  amount: number;
-  currency: string;
-  status: ClaimStatus;
-}
-
-export async function getMyClaims(): Promise<Claim[]> {
-  return api.get<Claim[]>("/claims/mine");
-}
-
-export async function getClaimDetail(id: string): Promise<ClaimDetail> {
-  return api.get<ClaimDetail>(`/claims/${id}`);
-}
-
-export async function getAgentQueue(): Promise<AgentQueueItem[]> {
-  return api.get<AgentQueueItem[]>("/claims/queue");
-}
-
-export async function getAdminRecentClaims(): Promise<RecentClaim[]> {
-  return api.get<RecentClaim[]>("/claims/admin/recent");
-}
-
-export async function getAdminStatusDistribution(): Promise<StatusDistribution[]> {
-  return api.get<StatusDistribution[]>("/claims/admin/status-distribution");
-}
-
-export async function getAdminVolume(days = 14): Promise<VolumeDataPoint[]> {
-  return api.get<VolumeDataPoint[]>(`/claims/admin/volume?days=${days}`);
-}
-
-export async function submitClaim(data: {
-  type: ClaimType;
-  amount: number;
-  currency: string;
+  title: string;
   description: string;
-  documents?: File[];
-}): Promise<Claim> {
-  return api.post<Claim>("/claims", data);
+  amount_claimed: number;
+  incident_date: string;
+  meta_insurer_number?: string | null;
+  meta_police_report?: string | null;
+  meta_vehicle_plate?: string | null;
+  meta_property_address?: string | null;
+}
+
+export interface ClaimAdminStats {
+  total: number;
+  by_status: Record<string, number>;
+  avg_processing_days?: number | null;
+  total_approved_amount: number;
+  total_claimed_amount: number;
+  auto_approved: number;
+  manual_approved: number;
+}
+
+export interface ClaimListResponse {
+  items: ClaimListItem[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export async function getMyClaims(serverToken?: string | null): Promise<ClaimListItem[]> {
+  const res = await api.get<ClaimListResponse>("/xclaims/claimant/claims", serverToken);
+  return res.items;
+}
+
+export async function createClaim(data: ClaimCreate): Promise<ClaimListItem> {
+  return api.post<ClaimListItem>("/xclaims/claimant/claims", data);
+}
+
+export async function getClaimDetail(id: string, serverToken?: string | null): Promise<ClaimListItem> {
+  return api.get<ClaimListItem>(`/xclaims/claimant/claims/${id}`, serverToken);
+}
+
+export async function submitClaim(id: string): Promise<void> {
+  return api.post(`/xclaims/claimant/claims/${id}/submit`);
+}
+
+export async function getAgentQueue(serverToken?: string | null): Promise<ClaimListItem[]> {
+  return api.get<ClaimListItem[]>("/xclaims/agent/queue", serverToken);
+}
+
+export async function getAllAgentClaims(): Promise<ClaimListItem[]> {
+  return api.get<ClaimListItem[]>("/xclaims/agent/all");
+}
+
+export async function getAgentClaimDetail(id: string): Promise<ClaimListItem> {
+  return api.get<ClaimListItem>(`/xclaims/agent/claims/${id}`);
+}
+
+export async function evaluateClaim(id: string, data: Record<string, unknown>): Promise<void> {
+  return api.post(`/xclaims/agent/claims/${id}/evaluate`, data);
+}
+
+export async function assignClaimToMe(id: string): Promise<void> {
+  return api.post(`/xclaims/agent/claims/${id}/assign`);
+}
+
+export async function getAdminClaims(): Promise<ClaimListItem[]> {
+  return api.get<ClaimListItem[]>("/xclaims/admin/claims");
+}
+
+export async function getAdminClaimDetail(id: string): Promise<ClaimListItem> {
+  return api.get<ClaimListItem>(`/xclaims/admin/claims/${id}`);
+}
+
+export async function assignClaim(claimId: string, agentId: string): Promise<void> {
+  return api.post(`/xclaims/admin/claims/${claimId}/assign/${agentId}`);
+}
+
+export async function closeClaim(id: string): Promise<void> {
+  return api.post(`/xclaims/admin/claims/${id}/close`);
+}
+
+export async function getAdminStats(): Promise<ClaimAdminStats> {
+  return api.get<ClaimAdminStats>("/xclaims/admin/stats");
 }

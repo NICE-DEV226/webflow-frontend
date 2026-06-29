@@ -5,7 +5,11 @@ import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/brand/logo";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
-import type { Tenant } from "@/lib/tenant";
+import type { TenantResponse } from "@/lib/tenant";
+
+interface TenantWithColor extends TenantResponse {
+  color?: string;
+}
 
 export function AuthLayout({
   title,
@@ -16,7 +20,7 @@ export function AuthLayout({
 }: {
   title: string;
   subtitle: string;
-  tenant?: Tenant;
+  tenant?: TenantWithColor;
   children: React.ReactNode;
   footer: React.ReactNode;
 }) {
@@ -94,7 +98,7 @@ export function AuthLayout({
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1.5">
                 <span
                   className="flex size-5 items-center justify-center rounded text-[10px] font-bold text-white"
-                  style={{ backgroundColor: tenant.color }}
+                  style={{ backgroundColor: tenant.color ?? "#1E3A5F" }}
                 >
                   {tenant.name.charAt(0)}
                 </span>

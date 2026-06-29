@@ -5,60 +5,67 @@ import { useTranslations } from "next-intl";
 import { Check, Sparkles, Shield, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { saveOnboardingPlan, type PlanTier } from "@/lib/api/tenants";
+import { updateTenantSettings } from "@/lib/api/tenants";
 import { cn } from "@/lib/utils";
 
-const PLANS: { tier: PlanTier; icon: typeof Zap; price: string; desc: string; features: string[] }[] = [
+type PlanTier = "starter" | "growth" | "enterprise";
+
+const PLANS: { tier: PlanTier; icon: typeof Zap; price: string; desc: string; ctaKey: string; features: string[] }[] = [
   {
     tier: "starter",
     icon: Shield,
     price: "$0 /mo",
-    desc: "Plan.description.starter",
+    desc: "plan.description.starter",
+    ctaKey: "plan.cta.starter",
     features: [
-      "Plan.features.claims100",
-      "Plan.features.agents2",
-      "Plan.features.brandedForm",
-      "Plan.features.emailSupport",
+      "plan.features.claims100",
+      "plan.features.agents2",
+      "plan.features.brandedForm",
+      "plan.features.emailSupport",
     ],
   },
   {
     tier: "growth",
     icon: Zap,
     price: "$299 /mo",
-    desc: "Plan.description.growth",
+    desc: "plan.description.growth",
+    ctaKey: "plan.cta.growth",
     features: [
-      "Plan.features.claims1000",
-      "Plan.features.agents10",
-      "Plan.features.workflowConfig",
-      "Plan.features.apiAccess",
-      "Plan.features.prioritySupport",
+      "plan.features.claims1000",
+      "plan.features.agents10",
+      "plan.features.workflowConfig",
+      "plan.features.apiAccess",
+      "plan.features.prioritySupport",
     ],
   },
   {
     tier: "enterprise",
     icon: Sparkles,
     price: "$899 /mo",
-    desc: "Plan.description.enterprise",
+    desc: "plan.description.enterprise",
+    ctaKey: "plan.cta.enterprise",
     features: [
-      "Plan.features.unlimitedClaims",
-      "Plan.features.unlimitedAgents",
-      "Plan.features.customWorkflows",
-      "Plan.features.dedicatedSupport",
-      "Plan.features.whiteLabel",
-      "Plan.features.sla",
+      "plan.features.unlimitedClaims",
+      "plan.features.unlimitedAgents",
+      "plan.features.customWorkflows",
+      "plan.features.dedicatedSupport",
+      "plan.features.whiteLabel",
+      "plan.features.sla",
     ],
   },
 ];
 
-export function PlanStep({ sessionId, onNext, onBack }: { sessionId: string; onNext: () => void; onBack: () => void }) {
+export function PlanStep({ sessionId, selectedPlan, onNext, onBack }: { sessionId: string; selectedPlan?: string | null; onNext: (plan: string) => void; onBack: () => void }) {
   const t = useTranslations("onboarding");
-  const [selected, setSelected] = useState<PlanTier | null>(null);
+  const [selected, setSelected] = useState<PlanTier | null>(
+    (selectedPlan ?? null) as PlanTier | null,
+  );
 
   async function handleContinue() {
     if (!selected) return;
     try {
-      await saveOnboardingPlan(sessionId, selected);
-      onNext();
+      await updateTenantSettings(sessionId, { plan: selected });
+      onNext(selected);
     } catch {
       // error handled by caller
     }
@@ -121,7 +128,7 @@ export function PlanStep({ sessionId, onNext, onBack }: { sessionId: string; onN
           {t("back")}
         </Button>
         <Button size="lg" disabled={!selected} onClick={handleContinue}>
-          {t("plan.startTrial")}
+          {selected ? t(PLANS.find((p) => p.tier === selected)?.ctaKey ?? "plan.startTrial") : t("plan.startTrial")}
         </Button>
       </div>
     </div>

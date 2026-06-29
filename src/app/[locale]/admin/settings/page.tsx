@@ -11,7 +11,7 @@ export default function AdminSettingsPage() {
   const { user } = useAuth();
 
   const sidebarUser = user
-    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    ? { name: user.email, email: user.email }
     : { name: "", email: "" };
 
   return (

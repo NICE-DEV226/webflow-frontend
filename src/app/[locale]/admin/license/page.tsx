@@ -12,7 +12,7 @@ export default function AdminLicensePage() {
   const { user } = useAuth();
 
   const sidebarUser = user
-    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    ? { name: user.email, email: user.email }
     : { name: "", email: "" };
 
   const usage = [

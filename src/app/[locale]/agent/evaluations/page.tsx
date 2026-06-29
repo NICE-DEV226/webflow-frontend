@@ -6,6 +6,8 @@ import { CLAIM_TYPE, type ClaimType } from "@/lib/claim-type";
 import type { ClaimStatus } from "@/lib/claim-status";
 import { getAgentEvaluations } from "@/lib/api/agents";
 import { getMe } from "@/lib/api/auth";
+import { getServerToken } from "@/lib/api/with-server-auth";
+import { redirect } from "next/navigation";
 const DECIDED = ["approved", "rejected", "paid"] as const;
 
 export default async function AgentEvaluationsPage({
@@ -21,8 +23,10 @@ export default async function AgentEvaluationsPage({
   const tType = await getTranslations("claimForm.fields.claim_type.options");
   const tRecent = await getTranslations("admin.recent");
 
-  const user = await getMe();
-  const evaluations = await getAgentEvaluations(user.id);
+  const token = await getServerToken();
+  if (!token) redirect(`/${locale}/login`);
+  const user = await getMe(token);
+  const evaluations = await getAgentEvaluations(user.id, token);
   const rows = (evaluations as Array<{ id: string; type: ClaimType; client: string; amount: number; currency: string; status: ClaimStatus }>).filter((c) =>
     (DECIDED as readonly string[]).includes(c.status),
   );
@@ -35,7 +39,7 @@ export default async function AgentEvaluationsPage({
     }).format(n);
 
   return (
-    <AppShell role="agent" user={{ name: user.firstName + " " + user.lastName, email: user.email }} title={tNav("evaluations")}>
+    <AppShell role="agent" user={{ name: user.email, email: user.email }} title={tNav("evaluations")}>
       <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

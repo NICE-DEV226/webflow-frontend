@@ -5,9 +5,16 @@ import { useTranslations, useLocale } from "next-intl";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { StatusBadge } from "@/components/claim/status-badge";
+import type { ClaimStatus } from "@/lib/claim-status";
 import { CLAIM_TYPE } from "@/lib/claim-type";
-import { getAdminRecentClaims, type RecentClaim } from "@/lib/api/claims";
+import { getAdminClaims, type ClaimListItem, type ClaimType } from "@/lib/api/claims";
 import { useAuth } from "@/components/auth-provider";
+
+interface AdminClaim extends ClaimListItem {
+  client: string;
+  agent: string | null;
+  amount: number;
+}
 
 export default function AdminClaimsPage() {
   const t = useTranslations("adminPages.claims");
@@ -17,14 +24,14 @@ export default function AdminClaimsPage() {
   const locale = useLocale();
   const { user } = useAuth();
 
-  const [claims, setClaims] = useState<RecentClaim[]>([]);
+  const [claims, setClaims] = useState<AdminClaim[]>([]);
 
   useEffect(() => {
-    getAdminRecentClaims().then(setClaims);
+    getAdminClaims().then((data) => setClaims(data as AdminClaim[])).catch(() => {});
   }, []);
 
   const sidebarUser = user
-    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    ? { name: user.email, email: user.email }
     : { name: "", email: "" };
 
   const money = (n: number) =>
@@ -51,7 +58,7 @@ export default function AdminClaimsPage() {
             </thead>
             <tbody>
               {claims.map((c, i) => {
-                const type = CLAIM_TYPE[c.type];
+                const type = CLAIM_TYPE[c.type as ClaimType];
                 const TypeIcon = type.icon;
                 return (
                   <tr key={c.id} className={i % 2 ? "bg-background" : "bg-card"}>
@@ -73,7 +80,7 @@ export default function AdminClaimsPage() {
                     </td>
                     <td className="px-5 py-3 text-right font-medium">{money(c.amount)}</td>
                     <td className="px-5 py-3">
-                      <StatusBadge status={c.status} />
+                      <StatusBadge status={c.status as ClaimStatus} />
                     </td>
                   </tr>
                 );

@@ -423,7 +423,13 @@
     "empty": {
       "title": "Vous êtes à jour",
       "body": "Les notifications sur vos sinistres apparaîtront ici en temps réel."
-    }
+    },
+    "markAllRead": "Tout marquer comme lu",
+    "markAsRead": "Marquer comme lu",
+    "justNow": "À l'instant",
+    "minutesAgo": "Il y a {minutes} min",
+    "hoursAgo": "Il y a {hours}h",
+    "daysAgo": "Il y a {days}j"
   },
   "agent": {
     "kpi": {
@@ -500,7 +506,7 @@
     "steps": {
       "company": "Société",
       "plan": "Offre",
-      "success": "Prêt"
+      "review": "Récapitulatif"
     },
     "continue": "Continuer",
     "back": "Retour",
@@ -516,7 +522,27 @@
       "countryPlaceholder": "Sélectionnez un pays",
       "sector": "Secteur d'assurance",
       "sectorPlaceholder": "Sélectionnez le secteur",
-      "agents": "Nombre estimé d'agents"
+      "agents": "Nombre estimé d'agents",
+      "countries": {
+        "CI": "Côte d'Ivoire",
+        "SN": "Sénégal",
+        "BF": "Burkina Faso",
+        "ML": "Mali",
+        "CM": "Cameroun",
+        "US": "États-Unis",
+        "FR": "France",
+        "UK": "Royaume-Uni"
+      },
+      "sectors": {
+        "auto": "Automobile",
+        "health": "Santé",
+        "property": "Habitation / IARD",
+        "liability": "Responsabilité civile",
+        "life": "Vie / Prévoyance",
+        "transport": "Transport / Maritime",
+        "multi": "Multi-branche",
+        "other": "Autre"
+      }
     },
     "branding": {
       "title": "Votre marque",
@@ -531,7 +557,12 @@
       "title": "Choisissez votre offre",
       "subtitle": "Commencez par un essai gratuit de 14 jours. Sans engagement — annulez à tout moment.",
       "popular": "Le plus populaire",
-      "startTrial": "Démarrer l'essai gratuit",
+      "startTrial": "Continuer",
+      "cta": {
+        "starter": "Démarrer gratuitement",
+        "growth": "Choisir Growth",
+        "enterprise": "Choisir Enterprise"
+      },
       "description": {
         "starter": "Pour les petites équipes qui débutent dans l'automatisation des sinistres.",
         "growth": "Pour les équipes en croissance qui ont besoin de workflows avancés et d'accès API.",
@@ -554,6 +585,24 @@
         "whiteLabel": "White-label",
         "sla": "SLA garanti"
       }
+    },
+    "review": {
+      "title": "Récapitulatif",
+      "subtitle": "Vérifiez les informations avant de commencer.",
+      "companySection": "Société",
+      "brandingSection": "Marque",
+      "planSection": "Offre",
+      "name": "Nom",
+      "email": "E-mail",
+      "country": "Pays",
+      "sector": "Secteur",
+      "agents": "Agents",
+      "logo": "Logo",
+      "primaryColor": "Couleur principale",
+      "secondaryColor": "Couleur secondaire",
+      "noPlan": "Aucune offre sélectionnée",
+      "changePlan": "Changer d'offre",
+      "goToDashboard": "Accéder au tableau de bord"
     },
     "success": {
       "title": "Votre espace est prêt !",
@@ -586,43 +635,36 @@
     "dashboard": {
       "title": "Vue d'ensemble",
       "subtitle": "Métriques de la plateforme multi-tenant.",
-      "totalTenants": "Total tenants",
-      "totalClaims": "Total sinistres",
-      "activeUsers": "Utilisateurs actifs",
-      "monthlyRevenue": "Revenu mensuel"
+      "total_tasks": "Tâches totales",
+      "active_tenants": "Tenants actifs",
+      "archived_tasks": "Tâches archivées",
+      "byStatus": "Par statut"
     },
     "tenants": {
       "title": "Tenants",
-      "subtitle": "Gérer toutes les compagnies d'assurance.",
-      "slug": "Slug",
-      "name": "Nom",
-      "plan": "Offre",
-      "status": "Statut",
-      "active": "Actif",
-      "suspended": "Suspendu",
-      "actions": "Actions",
-      "suspend": "Suspendre",
-      "activate": "Activer",
-      "empty": "Aucun tenant enregistré."
+      "subtitle": "Aperçu des tâches par tenant.",
+      "tenantId": "ID Tenant",
+      "activeTasks": "Tâches actives",
+      "overdueTasks": "En retard",
+      "archivedTasks": "Archivées",
+      "empty": "Aucune donnée."
     },
     "licenses": {
-      "title": "Licences & Facturation",
-      "subtitle": "Suivi des abonnements de tous les tenants.",
-      "tenant": "Tenant",
-      "plan": "Offre",
-      "status": "Statut",
-      "trialEnds": "Fin d'essai",
-      "active": "Actif",
-      "expired": "Expiré",
-      "trial": "Essai"
+      "title": "Plans tarifaires",
+      "subtitle": "Plans d'abonnement disponibles sur la plateforme.",
+      "maxUsers": "Utilisateurs max",
+      "type": "Type",
+      "empty": "Aucun plan disponible."
     },
     "audit": {
       "title": "Piste d'audit",
-      "subtitle": "Journal d'audit cross-tenant immuable.",
-      "actor": "Acteur",
+      "subtitle": "Résumé de vos actions sur la plateforme.",
+      "totalActions": "Actions totales",
+      "softDeletedComments": "Commentaires supprimés",
+      "uniqueActions": "Types d'actions",
       "action": "Action",
-      "target": "Cible",
-      "when": "Quand"
+      "count": "Nombre",
+      "empty": "Aucune activité enregistrée."
     }
   },
   "adminPages": {
@@ -639,7 +681,39 @@
       "status": "Statut",
       "handled": "Traités",
       "active": "Actif",
-      "inactive": "Inactif"
+      "inactive": "Inactif",
+      "role": "Rôle",
+      "owner": "Propriétaire",
+      "agent": "Agent",
+      "inviteTitle": "Inviter un agent",
+      "inviteBody": "L'agent recevra un email avec un lien pour rejoindre votre espace.",
+      "emailLabel": "Adresse email",
+      "cancel": "Annuler",
+      "sendInvite": "Envoyer l'invitation",
+      "inviteSuccess": "Invitation envoyée",
+      "inviteError": "Erreur lors de l'envoi",
+      "emptyTitle": "Aucun agent",
+      "emptyBody": "Invitez des agents pour gérer les sinistres avec vous.",
+      "membersTab": "Membres",
+      "invitesTab": "Invitations",
+      "actions": "Actions",
+      "changeRole": "Changer le rôle",
+      "remove": "Retirer",
+      "confirmRemove": "Confirmer",
+      "cancelInvite": "Annuler l'invitation",
+      "cancelSuccess": "Invitation annulée",
+      "cancelError": "Erreur lors de l'annulation",
+      "removeSuccess": "Membre retiré",
+      "removeError": "Erreur lors du retrait",
+      "roleLabel": "Rôle",
+      "defaultRole": "Rôle par défaut",
+      "roleSuccess": "Rôle mis à jour",
+      "roleError": "Erreur lors de la mise à jour",
+      "noInvites": "Aucune invitation",
+      "pendingInvites": "Invitations en attente",
+      "acceptedInvites": "Invitations acceptées",
+      "pending": "En attente",
+      "accepted": "Acceptée"
     },
     "audit": {
       "title": "Piste d'audit",

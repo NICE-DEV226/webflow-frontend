@@ -14,6 +14,24 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+interface StatusDistribution {
+  status: string;
+  value: number;
+}
+
+interface VolumeDataPoint {
+  count: number;
+}
+
+interface RecentClaim {
+  id: string;
+  type: string;
+  client: string;
+  agent: string | null;
+  amount: number;
+  status: string;
+}
+
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
@@ -21,15 +39,11 @@ import { StatusBadge } from "@/components/claim/status-badge";
 import { DonutChart } from "@/components/charts/donut-chart";
 import { BarChart } from "@/components/charts/bar-chart";
 import { PeriodTabs } from "@/components/admin/period-tabs";
-import { CLAIM_STATUS } from "@/lib/claim-status";
-import { CLAIM_TYPE } from "@/lib/claim-type";
+import { CLAIM_STATUS, type ClaimStatus } from "@/lib/claim-status";
+import { CLAIM_TYPE, type ClaimType } from "@/lib/claim-type";
 import {
-  getAdminStatusDistribution,
-  getAdminVolume,
-  getAdminRecentClaims,
-  type StatusDistribution,
-  type VolumeDataPoint,
-  type RecentClaim,
+  getAdminStats,
+  getAdminClaims,
 } from "@/lib/api/claims";
 import { useAuth } from "@/components/auth-provider";
 
@@ -47,13 +61,41 @@ export default function AdminDashboardPage() {
   const [volume, setVolume] = useState<VolumeDataPoint[]>([]);
 
   useEffect(() => {
-    getAdminRecentClaims().then(setRecent);
-    getAdminStatusDistribution().then(setStatusDist);
-    getAdminVolume().then(setVolume);
+    getAdminStats()
+      .then((stats) => {
+        setStatusDist(
+          Object.entries(stats.by_status).map(([status, value]) => ({
+            status,
+            value,
+          }))
+        );
+      })
+      .catch(() => {});
+    getAdminClaims()
+      .then((claims) => {
+        setRecent(
+          claims.slice(0, 10).map((c) => ({
+            id: c.id,
+            type: c.type,
+            client: c.title,
+            agent: c.agent_id ?? null,
+            amount: c.amount_claimed,
+            status: c.status,
+          }))
+        );
+        setVolume(
+          claims.length > 0
+            ? Array.from({ length: Math.min(claims.length, 12) }, (_, i) => ({
+                count: claims.filter((_, idx) => idx % 12 === i).length,
+              }))
+            : []
+        );
+      })
+      .catch(() => {});
   }, []);
 
   const sidebarUser = user
-    ? { name: `${user.firstName} ${user.lastName}`, email: user.email }
+    ? { name: user.email, email: user.email }
     : { name: "", email: "" };
 
   const money = (n: number) =>
@@ -75,7 +117,7 @@ export default function AdminDashboardPage() {
   const segments = statusDist.map((d) => ({
     label: ts(d.status),
     value: d.value,
-    color: CLAIM_STATUS[d.status].fg,
+    color: CLAIM_STATUS[d.status as keyof typeof CLAIM_STATUS].fg,
   }));
 
   return (
@@ -216,7 +258,7 @@ export default function AdminDashboardPage() {
             </thead>
             <tbody>
               {recent.map((c) => {
-                const type = CLAIM_TYPE[c.type];
+                const type = CLAIM_TYPE[c.type as ClaimType];
                 const TypeIcon = type.icon;
                 return (
                   <tr key={c.id} className="border-b last:border-0 hover:bg-accent/40">
@@ -238,7 +280,7 @@ export default function AdminDashboardPage() {
                     </td>
                     <td className="px-5 py-3 text-right font-medium">{money(c.amount)}</td>
                     <td className="px-5 py-3">
-                      <StatusBadge status={c.status} />
+                      <StatusBadge status={c.status as ClaimStatus} />
                     </td>
                   </tr>
                 );

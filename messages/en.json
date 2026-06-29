@@ -423,7 +423,13 @@
     "empty": {
       "title": "You're all caught up",
       "body": "Notifications about your claims will appear here in real time."
-    }
+    },
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "justNow": "Just now",
+    "minutesAgo": "{minutes}m ago",
+    "hoursAgo": "{hours}h ago",
+    "daysAgo": "{days}d ago"
   },
   "agent": {
     "kpi": {
@@ -500,7 +506,7 @@
     "steps": {
       "company": "Company",
       "plan": "Plan",
-      "success": "Ready"
+      "review": "Summary"
     },
     "continue": "Continue",
     "back": "Back",
@@ -516,7 +522,27 @@
       "countryPlaceholder": "Select country",
       "sector": "Insurance sector",
       "sectorPlaceholder": "Select sector",
-      "agents": "Estimated number of agents"
+      "agents": "Estimated number of agents",
+      "countries": {
+        "CI": "Côte d'Ivoire",
+        "SN": "Senegal",
+        "BF": "Burkina Faso",
+        "ML": "Mali",
+        "CM": "Cameroon",
+        "US": "United States",
+        "FR": "France",
+        "UK": "United Kingdom"
+      },
+      "sectors": {
+        "auto": "Automobile",
+        "health": "Health",
+        "property": "Property / IARD",
+        "liability": "Liability",
+        "life": "Life / Provident",
+        "transport": "Transport / Maritime",
+        "multi": "Multi-branch",
+        "other": "Other"
+      }
     },
     "branding": {
       "title": "Your brand",
@@ -531,7 +557,12 @@
       "title": "Choose your plan",
       "subtitle": "Start with a 14-day free trial. No commitment — cancel anytime.",
       "popular": "Most popular",
-      "startTrial": "Start 14-day free trial",
+      "startTrial": "Continue",
+      "cta": {
+        "starter": "Start free",
+        "growth": "Choose Growth",
+        "enterprise": "Choose Enterprise"
+      },
       "description": {
         "starter": "Small teams getting started with claims automation.",
         "growth": "Growing teams that need advanced workflows and API access.",
@@ -554,6 +585,24 @@
         "whiteLabel": "White-label",
         "sla": "Guaranteed SLA"
       }
+    },
+    "review": {
+      "title": "Review & Confirm",
+      "subtitle": "Please review your details before getting started.",
+      "companySection": "Company",
+      "brandingSection": "Branding",
+      "planSection": "Plan",
+      "name": "Name",
+      "email": "Email",
+      "country": "Country",
+      "sector": "Sector",
+      "agents": "Agents",
+      "logo": "Logo",
+      "primaryColor": "Primary color",
+      "secondaryColor": "Secondary color",
+      "noPlan": "No plan selected",
+      "changePlan": "Change plan",
+      "goToDashboard": "Go to dashboard"
     },
     "success": {
       "title": "Your workspace is ready!",
@@ -586,43 +635,36 @@
     "dashboard": {
       "title": "Platform Overview",
       "subtitle": "Multi-tenant platform metrics at a glance.",
-      "totalTenants": "Total tenants",
-      "totalClaims": "Total claims",
-      "activeUsers": "Active users",
-      "monthlyRevenue": "Monthly revenue"
+      "total_tasks": "Total tasks",
+      "active_tenants": "Active tenants",
+      "archived_tasks": "Archived tasks",
+      "byStatus": "By status"
     },
     "tenants": {
       "title": "Tenants",
-      "subtitle": "Manage all insurance companies on the platform.",
-      "slug": "Slug",
-      "name": "Name",
-      "plan": "Plan",
-      "status": "Status",
-      "active": "Active",
-      "suspended": "Suspended",
-      "actions": "Actions",
-      "suspend": "Suspend",
-      "activate": "Activate",
-      "empty": "No tenants registered yet."
+      "subtitle": "Task overview per tenant.",
+      "tenantId": "Tenant ID",
+      "activeTasks": "Active tasks",
+      "overdueTasks": "Overdue",
+      "archivedTasks": "Archived",
+      "empty": "No data."
     },
     "licenses": {
-      "title": "Licenses & Billing",
-      "subtitle": "Track subscriptions across all tenants.",
-      "tenant": "Tenant",
-      "plan": "Plan",
-      "status": "Status",
-      "trialEnds": "Trial ends",
-      "active": "Active",
-      "expired": "Expired",
-      "trial": "Trial"
+      "title": "Pricing Plans",
+      "subtitle": "Available subscription plans on the platform.",
+      "maxUsers": "Max users",
+      "type": "Type",
+      "empty": "No plans available."
     },
     "audit": {
       "title": "Audit trail",
-      "subtitle": "Cross-tenant immutable audit log.",
-      "actor": "Actor",
+      "subtitle": "Summary of your actions on the platform.",
+      "totalActions": "Total actions",
+      "softDeletedComments": "Deleted comments",
+      "uniqueActions": "Action types",
       "action": "Action",
-      "target": "Target",
-      "when": "When"
+      "count": "Count",
+      "empty": "No activity recorded."
     }
   },
   "adminPages": {
@@ -639,7 +681,39 @@
       "status": "Status",
       "handled": "Handled",
       "active": "Active",
-      "inactive": "Inactive"
+      "inactive": "Inactive",
+      "role": "Role",
+      "owner": "Owner",
+      "agent": "Agent",
+      "inviteTitle": "Invite an agent",
+      "inviteBody": "The agent will receive an email with a link to join your workspace.",
+      "emailLabel": "Email address",
+      "cancel": "Cancel",
+      "sendInvite": "Send invitation",
+      "inviteSuccess": "Invitation sent",
+      "inviteError": "Failed to send invitation",
+      "emptyTitle": "No agents yet",
+      "emptyBody": "Invite agents to help manage claims.",
+      "membersTab": "Members",
+      "invitesTab": "Invitations",
+      "actions": "Actions",
+      "changeRole": "Change role",
+      "remove": "Remove",
+      "confirmRemove": "Confirm",
+      "cancelInvite": "Cancel invitation",
+      "cancelSuccess": "Invitation cancelled",
+      "cancelError": "Failed to cancel invitation",
+      "removeSuccess": "Member removed",
+      "removeError": "Failed to remove member",
+      "roleLabel": "Role",
+      "defaultRole": "Default role",
+      "roleSuccess": "Role updated",
+      "roleError": "Failed to update role",
+      "noInvites": "No invitations",
+      "pendingInvites": "Pending invitations",
+      "acceptedInvites": "Accepted invitations",
+      "pending": "Pending",
+      "accepted": "Accepted"
     },
     "audit": {
       "title": "Audit trail",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Building2, Palette, Upload } from "lucide-react";
+import { Building2, Loader2, Palette, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,31 +14,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { saveOnboardingCompany, saveOnboardingBranding } from "@/lib/api/tenants";
+import { getRefreshToken, ApiError } from "@/lib/api/client";
+import { setupCreate, updateTenantSettings } from "@/lib/api/tenants";
+import { toast } from "sonner";
 
 const COUNTRIES = [
-  { value: "CI", label: "Côte d'Ivoire" },
-  { value: "SN", label: "Sénégal" },
-  { value: "BF", label: "Burkina Faso" },
-  { value: "ML", label: "Mali" },
-  { value: "CM", label: "Cameroun" },
-  { value: "US", label: "United States" },
-  { value: "FR", label: "France" },
-  { value: "UK", label: "United Kingdom" },
+  { value: "CI", labelKey: "company.countries.CI" },
+  { value: "SN", labelKey: "company.countries.SN" },
+  { value: "BF", labelKey: "company.countries.BF" },
+  { value: "ML", labelKey: "company.countries.ML" },
+  { value: "CM", labelKey: "company.countries.CM" },
+  { value: "US", labelKey: "company.countries.US" },
+  { value: "FR", labelKey: "company.countries.FR" },
+  { value: "UK", labelKey: "company.countries.UK" },
 ];
 
 const SECTORS = [
-  { value: "auto", label: "Automobile" },
-  { value: "health", label: "Santé" },
-  { value: "property", label: "Habitation / IARD" },
-  { value: "liability", label: "Responsabilité civile" },
-  { value: "life", label: "Vie / Prévoyance" },
-  { value: "transport", label: "Transport / Maritime" },
-  { value: "multi", label: "Multi-branche" },
-  { value: "other", label: "Autre" },
+  { value: "auto", labelKey: "company.sectors.auto" },
+  { value: "health", labelKey: "company.sectors.health" },
+  { value: "property", labelKey: "company.sectors.property" },
+  { value: "liability", labelKey: "company.sectors.liability" },
+  { value: "life", labelKey: "company.sectors.life" },
+  { value: "transport", labelKey: "company.sectors.transport" },
+  { value: "multi", labelKey: "company.sectors.multi" },
+  { value: "other", labelKey: "company.sectors.other" },
 ];
 
-export function CompanyStep({ onNext }: { onNext: (sessionId: string) => void }) {
+export interface CompanyFormData {
+  name: string;
+  email: string;
+  country: string;
+  countryLabel: string;
+  sector: string;
+  sectorLabel: string;
+  agentCount: string;
+  primaryColor: string;
+  secondaryColor: string;
+  logoPreview: string | null;
+}
+
+export function CompanyStep({ onNext }: { onNext: (data: { tenantId: string; company: CompanyFormData }) => void }) {
   const t = useTranslations("onboarding");
 
   const [name, setName] = useState("");
@@ -50,6 +65,7 @@ export function CompanyStep({ onNext }: { onNext: (sessionId: string) => void })
   const [secondaryColor, setSecondaryColor] = useState("#1D9E75");
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
   function validate(): boolean {
     const e: Record<string, string> = {};
@@ -73,22 +89,49 @@ export function CompanyStep({ onNext }: { onNext: (sessionId: string) => void })
 
   async function handleNext() {
     if (!validate()) return;
+    setLoading(true);
     try {
-      const { sessionId } = await saveOnboardingCompany({
-        slug: "",
+      const refresh_token = getRefreshToken();
+      if (!refresh_token) {
+        toast.error("Session expirée. Veuillez vous reconnecter.");
+        setLoading(false);
+        return;
+      }
+      const setupRes = await setupCreate({
+        refresh_token,
         name: name.trim(),
-        country,
-        sector,
-        agentCount: Number(agentCount) || 1,
+        slug: name.trim().toLowerCase().replace(/\s+/g, "-"),
       });
-      await saveOnboardingBranding(sessionId, {
+      await updateTenantSettings(setupRes.tenant_id!, {
         primaryColor,
         secondaryColor,
         logoUrl: logoPreview,
       });
-      onNext(sessionId);
-    } catch {
-      // error will be handled by the caller/toast
+      const countryLabel = t(COUNTRIES.find((c) => c.value === country)?.labelKey ?? "") || country;
+      const sectorLabel = t(SECTORS.find((s) => s.value === sector)?.labelKey ?? "") || sector;
+      onNext({
+        tenantId: setupRes.tenant_id!,
+        company: {
+          name: name.trim(),
+          email,
+          country,
+          countryLabel,
+          sector,
+          sectorLabel,
+          agentCount,
+          primaryColor,
+          secondaryColor,
+          logoPreview,
+        },
+      });
+    } catch (e) {
+      if (e instanceof ApiError) {
+        toast.error(e.message);
+      } else {
+        toast.error(t("errors.generic") || "Une erreur est survenue");
+      }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -137,7 +180,7 @@ export function CompanyStep({ onNext }: { onNext: (sessionId: string) => void })
               <SelectContent>
                 {COUNTRIES.map((c) => (
                   <SelectItem key={c.value} value={c.value}>
-                    {c.label}
+                    {t(c.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -154,7 +197,7 @@ export function CompanyStep({ onNext }: { onNext: (sessionId: string) => void })
               <SelectContent>
                 {SECTORS.map((s) => (
                   <SelectItem key={s.value} value={s.value}>
-                    {s.label}
+                    {t(s.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -235,7 +278,8 @@ export function CompanyStep({ onNext }: { onNext: (sessionId: string) => void })
       </section>
 
       <div className="flex justify-end border-t pt-6">
-        <Button size="lg" onClick={handleNext}>
+        <Button size="lg" onClick={handleNext} disabled={loading}>
+          {loading && <Loader2 className="size-4 animate-spin" />}
           {t("continue")}
         </Button>
       </div>
