@@ -2,39 +2,27 @@
   <img alt="ClaimFlow" src="https://raw.githubusercontent.com/NICE-DEV226/webflow-frontend/main/public/brand/logo.png" width="160" height="160">
 </p>
 
-# ClaimFlow
+<h1 align="center">ClaimFlow</h1>
 
-> From claim to payout, in one traceable pipeline.
+<p align="center">
+  <em>From claim to payout, in one traceable pipeline.</em>
+</p>
 
-**ClaimFlow** is a multi-tenant insurance claims management SaaS built during a hackathon. It streamlines the full claims lifecycle — submission, agent evaluation, approval workflows, and payout — for mid-market insurers in Africa and emerging markets.
-
-[![Next.js](https://img.shields.io/badge/Next.js-16.2-000?logo=next.js)](https://nextjs.org)
-[![React](https://img.shields.io/badge/React-19-087ea4?logo=react)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com)
-[![License](https://img.shields.io/badge/license-MIT-blue)](#license)
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [User Flow](#user-flow)
-- [Build](#build)
-- [License](#license)
+<p align="center">
+  <a href="#features"><img src="https://img.shields.io/badge/Next.js-16.2-000?logo=next.js" alt="Next.js"></a>
+  <a href="#features"><img src="https://img.shields.io/badge/React-19-087ea4?logo=react" alt="React"></a>
+  <a href="#features"><img src="https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript" alt="TypeScript"></a>
+  <a href="#features"><img src="https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwindcss" alt="Tailwind CSS"></a>
+  <a href="#license"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License"></a>
+</p>
 
 ---
 
 ## Overview
 
-ClaimFlow replaces fragmented email-and-spreadsheet workflows with a unified digital pipeline. It supports three roles — **policyholder**, **claims agent**, and **administrator** — each with a dedicated dashboard and claim lifecycle views.
+ClaimFlow is a multi-tenant insurance claims management SaaS for mid-market insurers in Africa and emerging markets. It replaces fragmented email-and-spreadsheet workflows with a unified digital pipeline spanning submission, agent evaluation, approval workflows, and payout.
 
-Built as a hackathon proof-of-concept, the frontend is fully functional with mocked data stores ready to be swapped for real API integrations.
+The platform supports three roles — **policyholder**, **claims agent**, and **administrator** — each with a dedicated dashboard. A **super-admin** panel provides cross-tenant oversight, license management, and audit.
 
 ---
 
@@ -42,12 +30,17 @@ Built as a hackathon proof-of-concept, the frontend is fully functional with moc
 
 - **Multi-tenant architecture** — Subdomain-based tenant resolution with isolated branding (logo, colors, company info)
 - **Three-role dashboards** — Policyholder (submit & track), Agent (queue & evaluate), Admin (oversee & configure)
-- **Onboarding wizard** — Guided 3-step setup: company info → plan selection → getting started guide
+- **Super-admin panel** — Cross-tenant metrics, license management, audit trail
+- **Onboarding wizard** — Guided setup: company profile → plan selection → ready state
+- **Agent management** — Invite members, assign roles, manage permissions per tenant
+- **RBAC** — Role-based access control with fine-grained permissions per plugin (xclaims, xtasks, etc.)
 - **Smart workflow engine** — Auto-approve low-value claims, round-robin / load-balanced / manual agent routing, configurable auto-reject timers
-- **Branding & configuration** — Upload logo, pick brand colors, manage `f/[slug]` public form links
-- **Audit trail** — Trace every claim status change for regulatory compliance
-- **i18n ready** — English and French built-in via `next-intl` v4; locale prefix `as-needed`
-- **Responsive design** — Mobile-first, cloud-white content area with signature navy sidebar
+- **Notification system** — Real-time SSE and email notifications, mark-as-read, mark-all-as-read
+- **Branding & configuration** — Upload logo, pick brand colors, manage public form links
+- **Audit trail** — Every claim status change and sensitive action is logged
+- **Internationalization** — English and French via `next-intl` v4
+- **Responsive design** — Mobile-first with cloud-white content area and signature navy sidebar
+- **Public claim forms** — Embedded `f/[slug]` forms for external claimants
 
 ---
 
@@ -57,11 +50,14 @@ Built as a hackathon proof-of-concept, the frontend is fully functional with moc
 |---|---|
 | **Framework** | Next.js 16 (App Router) |
 | **UI** | React 19, Tailwind CSS v4, shadcn/ui, @base-ui/react |
-| **Animation** | Motion (Framer Motion), Lottie (@lottiefiles/dotlottie-react) |
+| **Animation** | Motion (Framer Motion), Lottie |
 | **Forms** | react-hook-form + Zod |
 | **Icons** | Lucide React, custom SVG brand components |
 | **Internationalization** | next-intl v4 (en/fr) |
 | **Theming** | next-themes |
+| **State** | React Context (auth, tenant, onboarding) |
+| **API layer** | Custom `fetch` wrapper with JWT Bearer auth, refresh token rotation |
+| **Real-time** | SSE via WebSocket manager (xpulse) |
 
 ---
 
@@ -69,29 +65,45 @@ Built as a hackathon proof-of-concept, the frontend is fully functional with moc
 
 ```
 src/
-├── app/[locale]/       # Route segments (landing, auth, onboarding, admin, agent, claimant)
-│   ├── admin/          # Admin dashboard, claims, agents, settings, audit trail
-│   ├── agent/          # Agent queue, evaluations
-│   ├── claimant/       # My claims, new claim
-│   ├── onboarding/     # Multi-step wizard
-│   ├── register/       # Registration
-│   └── login/          # Sign-in
-├── components/         # Shared UI components
-│   ├── auth/           # Login & registration forms
-│   ├── brand/          # Logo, LogoMark SVGs
-│   ├── admin/          # Settings tabs (branding, public links, workflow)
-│   └── onboarding/     # Wizard steps (company, plan, success)
-├── lib/                # Utilities, mock stores, tenant resolution
-│   ├── tenant.ts       # Tenant type, subdomain resolution
-│   ├── mock-tenants.ts # In-memory tenant CRUD
-│   └── mock-public-links.ts # In-memory public link CRUD
-└── messages/           # i18n JSON (en.json, fr.json)
+├── app/[locale]/            # Route segments
+│   ├── admin/               # Dashboard, claims, agents, settings, audit, workflows
+│   ├── agent/               # Queue, evaluations, notifications
+│   ├── dashboard/           # Policyholder claims, notifications
+│   ├── super-admin/         # Dashboard, tenants, licenses, audit
+│   ├── onboarding/          # Multi-step wizard
+│   ├── register/            # Registration
+│   ├── login/               # Sign-in
+│   └── f/[slug]             # Public claim submission forms
+├── components/
+│   ├── auth/                # Login & registration forms
+│   ├── brand/               # Logo, LogoMark SVGs
+│   ├── admin/               # Settings tabs (branding, public links, workflow)
+│   ├── onboarding/          # Wizard steps (company, plan, review)
+│   ├── notifications/       # Notification list with time-ago formatting
+│   └── layout/              # App shell, sidebar, nav guards
+├── lib/
+│   ├── api/                 # API client, typed modules (auth, claims, agents, tenants, etc.)
+│   │   ├── client.ts        # Fetch wrapper with JWT, error handling
+│   │   ├── auth.ts          # Login, register, refresh, logout
+│   │   ├── claims.ts        # Claim CRUD, admin stats
+│   │   ├── agents.ts        # Member & invite management, role assignment
+│   │   ├── tenants.ts       # Tenant settings, branding
+│   │   ├── platform.ts      # Super-admin metrics
+│   │   ├── notifications.ts # Notification CRUD
+│   │   ├── public-links.ts  # Public form link management
+│   │   └── with-server-auth.ts # Server-side token extraction from cookies
+│   ├── tenant.ts            # Tenant type, subdomain resolution
+│   └── tenant-server.ts     # Server-side tenant resolution
+└── messages/                # i18n JSON (en.json, fr.json)
 ```
 
-**Key decisions:**
-- **Mock-first** — No backend dependency. All data lives in `src/lib/mock-*.ts` for rapid iteration and demo.
-- **Tenant context** — `TenantProvider` wraps the app; `useTenant()` hook gives any component access to the current tenant.
-- **Subdomain routing** — `getTenantFromHost(host)` resolves tenant from the request hostname.
+### Key decisions
+
+- **Real API-first** — All data flows through a backend at `claimflow.xcorehub.dev` using JWT RS256 authentication
+- **Tenant context** — `TenantProvider` wraps the app; `useTenant()` hook gives any component access to the current tenant
+- **Subdomain routing** — `getTenantFromHost(host)` resolves tenant from the request hostname
+- **Cookie + localStorage** — JWT is stored in both for client-side and server-component access
+- **Plugin-based backend** — The xcore framework behind the API uses a plugin architecture (Orchauth for auth, xclaims for claims, xtasks for tasks, xpulse for notifications)
 
 ---
 
@@ -104,14 +116,35 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the landing page.
 
+### Environment variables
+
+```env
+NEXT_PUBLIC_API_URL=https://claimflow.xcorehub.dev
+# or http://localhost:8000 for local backend
+```
+
 ---
 
-## User Flow
+## User Flows
 
+### Policyholder
 ```
-Landing → /register → /onboarding → Company Step
-                                     → Plan Step
-                                     → Success Step → /admin/dashboard
+Landing → /register → /onboarding (company → plan → review) → /dashboard/claims
+```
+
+### Agent
+```
+/login → /agent/queue → evaluate claims → approve/reject
+```
+
+### Admin
+```
+/login → /admin/dashboard → manage claims, agents, branding, settings
+```
+
+### Super-admin
+```
+/login → /super-admin/dashboard → cross-tenant metrics, licenses, audit
 ```
 
 ---
@@ -122,10 +155,10 @@ Landing → /register → /onboarding → Company Step
 pnpm build
 ```
 
-The build generates all static routes (24 total) with zero TypeScript or page-generation errors.
+The build generates all static routes with zero TypeScript errors.
 
 ---
 
 ## License
 
-This project was created for a hackathon. All rights reserved unless otherwise specified.
+MIT
